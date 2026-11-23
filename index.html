@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proefexamen Wiskunde</title>
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--ink:#1f2328;--muted:#5d646e;--line:#dde2ea;--acc:#2563a8;--acc-ink:#fff;--soft:#e6eef8;
+--ok:#1d7a46;--okbg:#e7f4ec;--bad:#b42318;--badbg:#fdecea;--f1:#c0760f;--f2:#2563a8;--f3:#7a3fa0;--fr:#b42318;--fill1:rgba(192,118,15,.13);--fill2:rgba(37,99,168,.13)}
+@media (prefers-color-scheme:dark){:root{--bg:#16171a;--card:#212328;--ink:#ecebe7;--muted:#a3a7ae;--line:#35383e;--acc:#6ea8ef;--acc-ink:#111;--soft:#1c2a3b;
+--ok:#4cc38a;--okbg:#16342a;--bad:#f2786c;--badbg:#3b1d1b;--f1:#e8a03c;--f2:#6ea8ef;--f3:#c58fe4;--fr:#f2786c;--fill1:rgba(232,160,60,.16);--fill2:rgba(110,168,239,.16)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px}
+header h1{font-size:1.15rem;margin:0}
+header span{color:var(--muted);font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+h2{margin:0 0 8px;font-size:1.4rem}
+p{margin:.4em 0 .8em}
+.muted{color:var(--muted)}
+ul.topics{margin:.3em 0 1em;padding-left:1.2em}
+label.f{display:block;font-weight:600;margin:14px 0 6px}
+input[type=text]{font:inherit;width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input:focus{outline:none;border-color:var(--acc)}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:10px 16px}
+button.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:600}
+button:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:18px;flex-wrap:wrap}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--acc);transition:width .2s}
+.tag{display:inline-block;font-size:.78rem;font-weight:600;color:var(--acc);background:var(--soft);padding:2px 9px;border-radius:99px;margin-bottom:8px}
+.qtext{font-size:1.05rem}
+.expr{font-size:1.35rem;font-weight:600;text-align:center;margin:12px 0;letter-spacing:.02em}
+.choices{display:grid;gap:8px;margin-top:12px}
+.choice{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;padding:12px}
+.choice .k{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:.8rem;font-weight:700}
+.choice.sel{border-color:var(--acc);background:var(--soft)}
+.choice.sel .k{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.numrow{display:flex;align-items:center;gap:8px;margin-top:12px}
+.numrow input{max-width:200px}
+.numrow b{font-size:1.05rem}
+.numrow .pm{padding:10px 12px;font-weight:700}
+svg.fig{display:block;width:100%;max-width:420px;height:auto;margin:10px auto 4px}
+svg.fig text{font:600 13px system-ui,sans-serif}
+table.dtab{border-collapse:collapse;margin:10px auto;font-size:.95rem}
+table.dtab th,table.dtab td{border:1px solid var(--line);padding:5px 10px;text-align:center}
+table.dtab th{background:var(--soft)}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+.dots button{width:34px;height:34px;padding:0;font-size:.8rem;border-radius:8px}
+.dots button.ans{background:var(--soft);border-color:var(--acc)}
+.dots button.cur{outline:2px solid var(--acc);outline-offset:1px}
+.score{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.ring{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;font-size:1.7rem;font-weight:700}
+.tbl{width:100%;border-collapse:collapse;margin-top:14px}
+.tbl td{padding:6px 0;border-bottom:1px solid var(--line)}
+.tbl td:last-child{text-align:right;font-variant-numeric:tabular-nums;padding-left:10px}
+.rev{border-left:4px solid var(--line);margin-top:14px}
+.rev.ok{border-left-color:var(--ok)}
+.rev.bad{border-left-color:var(--bad)}
+.verd{font-weight:700}
+.ok .verd{color:var(--ok)}
+.bad .verd{color:var(--bad)}
+.ans{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:.95rem}
+.ans.mine{background:var(--bg)}
+.rev.ok .ans.mine{background:var(--okbg)}
+.rev.bad .ans.mine{background:var(--badbg)}
+.ans.right{background:var(--okbg)}
+.uitleg{margin-top:10px;font-size:.93rem;color:var(--muted)}
+.hist{font-size:.9rem;margin-top:10px}
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.gg>div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.gg b{font-size:.85rem;color:var(--acc);text-transform:uppercase;letter-spacing:.03em}
+.gg ul{margin:4px 0 0;padding-left:1.1em}
+.gg li{margin:2px 0}
+@media (max-width:480px){.gg{grid-template-columns:1fr}}
+.tip{margin-top:8px;font-size:.85rem;color:var(--muted)}
+.hint{font-size:.85rem;color:var(--muted);margin-top:6px}
+.small{font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Proefexamen Wiskunde</h1><span>1ste jaar</span></header>
+  <main id="app"></main>
+</div>
+<script>
+'use strict';
+/* ===== Instellingen ===== */
+const NTFY_TOPIC = 'wisk1plus-766x5zwkhb';        // uitslagen gaan naar https://ntfy.sh/<topic>
+const QUOTA = {G:5, N:7, M:5, Z:6};               // aantal vragen per onderdeel (23 in totaal)
+const TOPICS = {G:'Hfst 1 · Getallen', N:'Hfst 2 · Natuurlijke getallen', M:'Hfst 3 · Kijken en observeren', Z:'Hfst 8 · Gehele getallen'};
+const KEY = 'wisk1';                              // voorvoegsel localStorage
+
+/* ===== Hulpfuncties ===== */
+const rint = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const range = (a,b) => Array.from({length:b-a+1},(_,i)=>a+i);
+const f = (x,d=2) => (Math.round(x*10**d)/10**d).toLocaleString('nl-BE',{maximumFractionDigits:d,useGrouping:false});
+const rad = d => d*Math.PI/180;
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const zf = n => n<0 ? '−'+(-n) : String(n);                 // −5
+const zb = n => n<0 ? '(−'+(-n)+')' : '(+'+n+')';            // (−5) of (+3)
+const big = n => (n<0?'−':'') + (Math.abs(n)>=1000 ? String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ') : String(Math.abs(n)));
+const setS = a => a.length ? '{'+[...a].sort((x,y)=>x-y).join(', ')+'}' : '∅';
+const gcd = (a,b) => b ? gcd(b,a%b) : a;
+const lcm = (a,b) => a/gcd(a,b)*b;
+const divs = n => range(1,n).filter(d=>n%d===0);
+const digits = n => String(n).split('').map(Number);
+const dsum = n => digits(n).reduce((s,d)=>s+d,0);
+const uniq = a => [...new Set(a)];
+
+/* Rekenvraag: korte situatie + (optioneel) vak Gegeven / Gevraagd. */
+function num(text, answer, unit, uitleg, svg, geg, gevr){
+  const box = geg ? `<div class="gg"><div><b>Gegeven</b><ul>${geg.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><b>Gevraagd</b><ul><li>${gevr}</li></ul></div></div>` : '';
+  if(!Number.isInteger(answer)) throw new Error('geen geheel antwoord');
+  return {type:'num', text, gg:box, answer, unit:unit||'', uitleg, svg};
+}
+function mc(text, correct, wrong, uitleg, svg){
+  const ch=shuffle([correct,...wrong]);
+  if(new Set(ch).size!==ch.length) throw new Error('dubbele keuze');
+  return {type:'mc', text, choices:ch, correct:ch.indexOf(correct), uitleg, svg};
+}
+function tf(text, truth, uitleg){ return {type:'mc', text:'<b>Waar of onwaar?</b> '+text, choices:['Waar','Onwaar'], correct:truth?0:1, uitleg}; }
+/* n verschillende foute opties die niet gelijk zijn aan het juiste antwoord */
+function others(correct, cands, n=3){ const o=uniq(cands.filter(x=>x!==correct)); if(o.length<n) throw new Error('te weinig opties'); return shuffle(o).slice(0,n); }
+const tfPick = list => { const [t,w,u]=pick(list); return tf(t,w,u); };
+
+/* ===== Figuren (SVG) ===== */
+const svgW = (w,h,inner) => `<svg class="fig" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+const T = (x,y,t,col='var(--ink)',anc='middle',sz) => `<text x="${x}" y="${y}" fill="${col}" text-anchor="${anc}"${sz?` style="font-size:${sz}px"`:''}>${t}</text>`;
+const Ln = (x1,y1,x2,y2,col='var(--ink)',w=2,dash) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w}"${dash?' stroke-dasharray="5 4"':''}/>`;
+const Dot = (x,y,col='var(--ink)') => `<circle cx="${x}" cy="${y}" r="4" fill="${col}"/>`;
+
+/* Venn-diagram met twee verzamelingen A en B die overlappen */
+function figVenn(aO,I,bO,out){
+  const SA=[[95,85],[80,120],[115,150],[125,110]], SI=[[190,80],[190,110],[190,140]], SB=[[285,85],[300,120],[265,150],[255,110]], SO=[[28,200],[352,200],[190,203]];
+  let s=`<rect x="4" y="4" width="372" height="212" rx="10" fill="none" stroke="var(--muted)"/>`+
+    `<circle cx="140" cy="110" r="85" fill="var(--fill1)" stroke="var(--f1)" stroke-width="2"/>`+
+    `<circle cx="240" cy="110" r="85" fill="var(--fill2)" stroke="var(--f2)" stroke-width="2"/>`+
+    T(66,36,'A','var(--f1)','middle',17)+T(314,36,'B','var(--f2)','middle',17);
+  const put=(arr,sl)=>arr.forEach((v,i)=>{ s+=T(sl[i][0],sl[i][1]+6,v,'var(--ink)','middle',16); });
+  put(aO,SA); put(I,SI); put(bO,SB); put(out,SO);
+  return svgW(380,220,s);
+}
+/* Venn-diagram waarbij B helemaal binnen A ligt */
+function figVennSub(aO,bI,out){
+  const SA=[[110,85],[115,140],[160,55],[165,175]], SB=[[205,100],[235,115],[210,140]], SO=[[28,200],[352,200],[352,28]];
+  let s=`<rect x="4" y="4" width="372" height="212" rx="10" fill="none" stroke="var(--muted)"/>`+
+    `<circle cx="175" cy="112" r="98" fill="var(--fill1)" stroke="var(--f1)" stroke-width="2"/>`+
+    `<circle cx="215" cy="118" r="48" fill="var(--fill2)" stroke="var(--f2)" stroke-width="2"/>`+
+    T(90,34,'A','var(--f1)','middle',17)+T(268,72,'B','var(--f2)','middle',17);
+  const put=(arr,sl)=>arr.forEach((v,i)=>{ s+=T(sl[i][0],sl[i][1]+6,v,'var(--ink)','middle',16); });
+  put(aO,SA); put(bI,SB); put(out,SO);
+  return svgW(380,220,s);
+}
+/* Staafdiagram */
+function figBars(cats,vals,step,ylab){
+  const x0=48,x1=350,y0=190,y1=26, top=Math.ceil(Math.max(...vals)/step)*step, sy=v=>y0-(v/top)*(y0-y1);
+  let s='';
+  for(let v=0;v<=top;v+=step) s+=Ln(x0,sy(v),x1,sy(v),'var(--line)',1)+T(x0-7,sy(v)+4,v,'var(--muted)','end',11);
+  const bw=(x1-x0)/cats.length;
+  cats.forEach((c,i)=>{ const x=x0+i*bw+bw*.2, w=bw*.6;
+    s+=`<rect x="${x}" y="${sy(vals[i])}" width="${w}" height="${y0-sy(vals[i])}" fill="var(--f2)" rx="2"/>`+T(x+w/2,y0+18,c,'var(--ink)','middle',12); });
+  s+=Ln(x0,y0,x1,y0,'var(--ink)',1.5)+Ln(x0,y0,x0,y1-8,'var(--ink)',1.5)+T(x0-40,14,ylab,'var(--muted)','start',11);
+  return svgW(360,215,s);
+}
+/* Getallenas van lo tot hi; alleen de veelvouden van 5 krijgen een getal */
+function figAs(lo,hi,pts){
+  const x0=22,x1=338, X=v=>x0+(v-lo)/(hi-lo)*(x1-x0);
+  let s=Ln(8,70,348,70,'var(--ink)',2)+`<polygon points="358,70 347,64 347,76" fill="var(--ink)"/>`;
+  for(let v=lo;v<=hi;v++){ s+=Ln(X(v),63,X(v),77,'var(--ink)',v===0?2.6:1.3); if(v%5===0) s+=T(X(v),98,zf(v)); }
+  for(const [l,v,c] of pts) s+=`<circle cx="${X(v)}" cy="70" r="5.5" fill="${c}"/>`+T(X(v),50,l,c,'middle',15);
+  return svgW(366,110,s);
+}
+/* Twee rechten a en b: 'par' (evenwijdig), 'perp' (loodrecht), 'snij' (snijdend, niet loodrecht) */
+function figLines(kind){
+  const th=rad(rint(-20,20)), u=[Math.cos(th),-Math.sin(th)], nrm=[-u[1],u[0]], C=[180,110];
+  const line=(p,d,L,lt,col,lab)=>{ const n=[-d[1],d[0]];
+    return Ln(p[0]-L*d[0],p[1]-L*d[1],p[0]+L*d[0],p[1]+L*d[1],col,2.6)+T(p[0]+lt*d[0]+16*n[0],p[1]+lt*d[1]+16*n[1]+5,lab,col,'middle',16); };
+  let s='';
+  if(kind==='par'){ s=line([C[0]+32*nrm[0],C[1]+32*nrm[1]],u,165,140,'var(--f1)','a')+line([C[0]-32*nrm[0],C[1]-32*nrm[1]],u,165,140,'var(--f2)','b'); }
+  else{
+    const phi=kind==='perp'?90:pick([rint(30,60),rint(120,150)]), v=[Math.cos(th+rad(phi)),-Math.sin(th+rad(phi))];
+    s=line(C,u,165,140,'var(--f1)','a')+line(C,v,100,88,'var(--f2)','b');
+    if(kind==='perp') s+=`<polyline points="${C[0]+13*u[0]},${C[1]+13*u[1]} ${C[0]+13*u[0]+13*v[0]},${C[1]+13*u[1]+13*v[1]} ${C[0]+13*v[0]},${C[1]+13*v[1]}" fill="none" stroke="var(--ink)" stroke-width="1.5"/>`;
+    const w=[-(u[0]+v[0]),-(u[1]+v[1])], wl=Math.hypot(...w)||1;
+    s+=Dot(...C)+T(C[0]+20*w[0]/wl,C[1]+20*w[1]/wl+5,'S');
+  }
+  return svgW(360,220,s);
+}
+/* Rechthoek ABCD */
+function figRect(){
+  const A=[60,170],B=[300,170],C=[300,60],D=[60,60], m=12;
+  return svgW(360,200,`<polygon points="${[A,B,C,D].map(p=>p.join(',')).join(' ')}" fill="var(--soft)" stroke="var(--ink)" stroke-width="2.4"/>`+
+    `<polyline points="${A[0]+m},${A[1]} ${A[0]+m},${A[1]-m} ${A[0]},${A[1]-m}" fill="none" stroke="var(--ink)"/>`+
+    `<polyline points="${B[0]-m},${B[1]} ${B[0]-m},${B[1]-m} ${B[0]},${B[1]-m}" fill="none" stroke="var(--ink)"/>`+
+    `<polyline points="${C[0]-m},${C[1]} ${C[0]-m},${C[1]+m} ${C[0]},${C[1]+m}" fill="none" stroke="var(--ink)"/>`+
+    `<polyline points="${D[0]+m},${D[1]} ${D[0]+m},${D[1]+m} ${D[0]},${D[1]+m}" fill="none" stroke="var(--ink)"/>`+
+    T(46,188,'A')+T(314,188,'B')+T(314,52,'C')+T(46,52,'D'));
+}
+/* Rechte, lijnstuk of halfrechte door A en B */
+function figBasic(kind,rev){
+  const A=[110,62],B=[250,62]; let s;
+  if(kind==='rechte') s=Ln(12,62,348,62,'var(--f2)',2.6);
+  else if(kind==='lijnstuk') s=Ln(A[0],62,B[0],62,'var(--f2)',2.6)+Ln(A[0],54,A[0],70,'var(--f2)',2.6)+Ln(B[0],54,B[0],70,'var(--f2)',2.6);
+  else s=rev ? Ln(12,62,B[0],62,'var(--f2)',2.6)+Ln(B[0],54,B[0],70,'var(--f2)',2.6) : Ln(A[0],62,348,62,'var(--f2)',2.6)+Ln(A[0],54,A[0],70,'var(--f2)',2.6);
+  s+=Dot(...A)+Dot(...B)+T(A[0],44,'A')+T(B[0],44,'B');
+  return svgW(360,90,s);
+}
+/* Punten op een rechte met afstanden */
+function figSeg(ab,bc,ask){
+  const tot=ab+bc, X=v=>30+v/tot*300, xs=[X(0),X(ab),X(tot)];
+  let s=Ln(10,50,350,50,'var(--ink)',2)+xs.map(x=>Dot(x,50)).join('')+T(xs[0],34,'A')+T(xs[1],34,'B')+T(xs[2],34,'C');
+  const dim=(x1,x2,y,t)=>Ln(x1,y,x2,y,'var(--muted)',1.2)+Ln(x1,y-5,x1,y+5,'var(--muted)',1.2)+Ln(x2,y-5,x2,y+5,'var(--muted)',1.2)+T((x1+x2)/2,y-6,t,'var(--muted)');
+  s+=dim(xs[0],xs[1],80,ab+' cm');
+  s+= ask==='AC' ? dim(xs[1],xs[2],80,bc+' cm')+dim(xs[0],xs[2],115,'?') : dim(xs[1],xs[2],80,'?')+dim(xs[0],xs[2],115,tot+' cm');
+  return svgW(360,130,s);
+}
+function figPoints(n){
+  const L='ABCDEF', xs=range(0,n-1).map(i=>40+i*280/(n-1));
+  return svgW(360,80,Ln(10,50,350,50,'var(--ink)',2)+xs.map((x,i)=>Dot(x,50)+T(x,34,L[i])).join(''));
+}
+/* Ruimtefiguren en vlakke figuren */
+const SOL={
+  kubus: ()=>{ const F=[[80,70],[180,70],[180,170],[80,170]], o=[45,-35], Bk=F.map(p=>[p[0]+o[0],p[1]+o[1]]);
+    return `<polygon points="${F.map(p=>p.join(',')).join(' ')}" fill="var(--soft)" stroke="var(--ink)" stroke-width="2"/>`+
+      Ln(...F[0],...Bk[0])+Ln(...F[1],...Bk[1])+Ln(...F[2],...Bk[2])+Ln(...Bk[0],...Bk[1])+Ln(...Bk[1],...Bk[2])+
+      Ln(...Bk[0],...Bk[3],'var(--muted)',1.5,1)+Ln(...Bk[3],...Bk[2],'var(--muted)',1.5,1)+Ln(...F[3],...Bk[3],'var(--muted)',1.5,1); },
+  balk: ()=>{ const F=[[50,90],[200,90],[200,165],[50,165]], o=[55,-45], Bk=F.map(p=>[p[0]+o[0],p[1]+o[1]]);
+    return `<polygon points="${F.map(p=>p.join(',')).join(' ')}" fill="var(--soft)" stroke="var(--ink)" stroke-width="2"/>`+
+      Ln(...F[0],...Bk[0])+Ln(...F[1],...Bk[1])+Ln(...F[2],...Bk[2])+Ln(...Bk[0],...Bk[1])+Ln(...Bk[1],...Bk[2])+
+      Ln(...Bk[0],...Bk[3],'var(--muted)',1.5,1)+Ln(...Bk[3],...Bk[2],'var(--muted)',1.5,1)+Ln(...F[3],...Bk[3],'var(--muted)',1.5,1); },
+  prisma: ()=>{ const F=[[50,170],[160,170],[105,85]], o=[75,-40], Bk=F.map(p=>[p[0]+o[0],p[1]+o[1]]);
+    return `<polygon points="${F.map(p=>p.join(',')).join(' ')}" fill="var(--soft)" stroke="var(--ink)" stroke-width="2"/>`+
+      Ln(...F[1],...Bk[1])+Ln(...F[2],...Bk[2])+Ln(...Bk[1],...Bk[2])+
+      Ln(...F[0],...Bk[0],'var(--muted)',1.5,1)+Ln(...Bk[0],...Bk[1],'var(--muted)',1.5,1)+Ln(...Bk[0],...Bk[2],'var(--muted)',1.5,1); },
+  piramide: ()=>{ const a=[70,165],b=[190,165],c=[240,128],d=[120,128],t=[152,25];
+    return `<polygon points="${[a,b,t].map(p=>p.join(',')).join(' ')}" fill="var(--soft)" stroke="var(--ink)" stroke-width="2"/>`+
+      `<polygon points="${[b,c,t].map(p=>p.join(',')).join(' ')}" fill="var(--soft)" stroke="var(--ink)" stroke-width="2" fill-opacity=".6"/>`+
+      Ln(...c,...d,'var(--muted)',1.5,1)+Ln(...d,...a,'var(--muted)',1.5,1)+Ln(...t,...d,'var(--muted)',1.5,1); },
+  cilinder: ()=>`<rect x="80" y="45" width="140" height="115" fill="var(--soft)"/><ellipse cx="150" cy="45" rx="70" ry="17" fill="var(--soft)" stroke="var(--ink)" stroke-width="2"/>`+
+      Ln(80,45,80,160)+Ln(220,45,220,160)+`<path d="M80 160 A70 17 0 0 0 220 160" fill="none" stroke="var(--ink)" stroke-width="2"/><path d="M80 160 A70 17 0 0 1 220 160" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>`,
+  kegel: ()=>`<polygon points="75,160 225,160 150,22" fill="var(--soft)"/>`+Ln(75,160,150,22)+Ln(225,160,150,22)+
+      `<path d="M75 160 A75 18 0 0 0 225 160" fill="var(--soft)" stroke="var(--ink)" stroke-width="2"/><path d="M75 160 A75 18 0 0 1 225 160" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>`,
+  bol: ()=>`<circle cx="150" cy="100" r="75" fill="var(--soft)" stroke="var(--ink)" stroke-width="2"/><path d="M75 100 A75 20 0 0 0 225 100" fill="none" stroke="var(--ink)" stroke-width="1.5"/><path d="M75 100 A75 20 0 0 1 225 100" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>`,
+};
+const PLAT={
+  driehoek: '70,160 230,160 120,40', vierkant: '90,40 210,40 210,160 90,160', rechthoek: '45,60 255,60 255,150 45,150',
+  ruit: '150,20 210,100 150,180 90,100', parallellogram: '50,150 195,150 250,50 105,50', trapezium: '45,155 255,155 200,55 110,55',
+};
+const figSolid = k => svgW(300,190,SOL[k]());
+const figPlat = k => svgW(300,200, k==='cirkel' ? `<circle cx="150" cy="100" r="75" fill="var(--soft)" stroke="var(--ink)" stroke-width="2.4"/>` : `<polygon points="${PLAT[k]}" fill="var(--soft)" stroke="var(--ink)" stroke-width="2.4"/>`);
+
+/* ===== Vragenbank ===== */
+const PL1=['eenheid','tiental','honderdtal','duizendtal','tienduizendtal','honderdduizendtal','miljoen'];
+const PLn=['eenheden','tientallen','honderdtallen','duizendtallen','tienduizendtallen','honderdduizendtallen','miljoenen'];
+function vennData(){
+  const pool=shuffle(range(1,30)), a=rint(2,3), b=rint(1,3), c=rint(2,3), o=rint(1,2);
+  const aO=pool.slice(0,a), I=pool.slice(a,a+b), bO=pool.slice(a+b,a+b+c), out=pool.slice(a+b+c,a+b+c+o);
+  return {aO,I,bO,out,A:[...aO,...I],B:[...I,...bO],U:[...aO,...I,...bO]};
+}
+function trueFalse(stmts){ /* stmts: [tekst, waar?]; kies 1 juiste en 3 foute */
+  const tr=uniq(stmts.filter(s=>s[1]).map(s=>s[0])), fa=uniq(stmts.filter(s=>!s[1]).map(s=>s[0]));
+  if(!tr.length||fa.length<3) throw new Error('te weinig uitspraken');
+  return [pick(tr), shuffle(fa).slice(0,3)];
+}
+
+const BANK = {
+G:[
+ /* 1.1.2 Arabische cijfers: positiewaarde */
+ ()=>{ let ds; do{ ds=shuffle(range(0,9)).slice(0,7); }while(ds[0]===0);
+   const n=+ds.join(''); let p; do{ p=rint(1,6); }while(ds[6-p]===0);
+   const d=ds[6-p], oth=shuffle(range(0,6).filter(x=>x!==p)).slice(0,3);
+   return mc(`Wat is de <b>waarde</b> van het cijfer <b>${d}</b> in het getal ${big(n)}?`, big(d*10**p), oth.map(q=>big(d*10**q)),
+     `Ons talstelsel is een positiestelsel: de plaats van een cijfer bepaalt zijn waarde. De ${d} staat op de plaats van de ${PLn[p]}. De waarde is dus ${d} · ${big(10**p)} = ${big(d*10**p)}.`); },
+ ()=>{ const ps=shuffle(range(0,6)).slice(0,rint(3,4)).sort((a,b)=>b-a), ds=ps.map(()=>rint(1,9)), n=ps.reduce((s,p,i)=>s+ds[i]*10**p,0);
+   const nm=(d,p)=>`${d} ${d===1?PL1[p]:PLn[p]}`;
+   return num('Welk getal bestaat uit deze delen? Schrijf het getal in cijfers.', n, '',
+     ps.map((p,i)=>`${nm(ds[i],p)} = ${big(ds[i]*10**p)}`).join('<br>')+`<br>Samen: ${big(n)}. Op de plaatsen die niet genoemd worden, komt een 0.`, null,
+     ps.map((p,i)=>nm(ds[i],p)), 'het getal in cijfers'); },
+ ()=>pick([
+   ()=>mc('Onze cijfers 0, 1, 2, …, 9 noemen we <b>Arabische cijfers</b>. Waar zijn ze oorspronkelijk ontstaan?', 'In India',
+     ['In het oude Rome','In Griekenland','In Egypte'],
+     'De cijfers zijn ontstaan in India. Arabische geleerden namen ze over en via hen kwamen ze naar Europa. Daarom noemen we ze Arabische cijfers.'),
+   ()=>mc('Hoeveel verschillende cijfers gebruiken we om alle getallen te schrijven?', '10', ['9','100','oneindig veel'],
+     'Met de 10 cijfers 0, 1, 2, …, 9 kan je elk getal schrijven, omdat de plaats van een cijfer zijn waarde bepaalt.'),
+   ()=>{ const d=rint(2,9); return tf(`In het getal ${d}0${d} hebben de twee cijfers ${d} dezelfde waarde.`, false,
+     `Onwaar. De eerste ${d} staat bij de honderdtallen (waarde ${d*100}), de laatste bij de eenheden (waarde ${d}). De plaats bepaalt de waarde.`); },
+   ()=>tf('Ons talstelsel is een <b>tiendelig positiestelsel</b>: de waarde van een cijfer hangt af van de plaats in het getal.', true,
+     'Waar. We werken met groepen van 10 (tiendelig), en de plaats van een cijfer bepaalt zijn waarde (positiestelsel).'),
+ ])(),
+ /* 1.2 Soorten getallen */
+ ()=>{ const nat=rint(2,99), neg=-rint(2,50), kom=f(rint(1,40)+pick([0.5,0.25,0.75,0.2,0.4])), br=pick(['3/4','2/5','7/3','5/8','1/6','9/4']);
+   const it={nat:zf(nat),neg:zf(neg),kom,br}, k=pick(['nat','neg','kom','br']);
+   const Q={nat:'een <b>natuurlijk getal</b>',neg:'een <b>geheel getal</b>, maar <b>geen natuurlijk getal</b>',kom:'geschreven als een <b>kommagetal</b> (decimaal getal)',br:'geschreven als een <b>breuk</b>'};
+   return mc(`Welk getal is ${Q[k]}?`, it[k], Object.keys(it).filter(x=>x!==k).map(x=>it[x]),
+     `${it.nat} is een natuurlijk getal (ℕ = {0, 1, 2, 3, …}).<br>${it.neg} is een negatief geheel getal: het zit in ℤ, maar niet in ℕ.<br>${it.kom} is een kommagetal.<br>${it.br} is een breuk.`); },
+ ()=>tfPick([
+   ['Elk natuurlijk getal is ook een geheel getal.', true, 'Waar. ℕ = {0, 1, 2, …} zit helemaal in ℤ = {…, −2, −1, 0, 1, 2, …}. We schrijven ℕ ⊂ ℤ.'],
+   ['Elk geheel getal is ook een natuurlijk getal.', false, 'Onwaar. Negatieve getallen zoals −3 zijn gehele getallen, maar geen natuurlijke getallen.'],
+   ['Een kommagetal zoals 2,5 is een natuurlijk getal.', false, 'Onwaar. Natuurlijke getallen zijn 0, 1, 2, 3, … zonder komma.'],
+ ]),
+ /* 1.3 Getallen in verzamelingen */
+ ()=>{ const v=vennData();
+   return mc('Bekijk het Venn-diagram. Wat is <b>A ∩ B</b> (de doorsnede van A en B)?', setS(v.I),
+     others(setS(v.I),[setS(v.U),setS(v.aO),setS(v.bO),setS(v.A),setS(v.B)]),
+     `A ∩ B bevat de elementen die in A <b>én</b> in B zitten: het deel waar de cirkels overlappen. A ∩ B = ${setS(v.I)}.`, figVenn(v.aO,v.I,v.bO,v.out)); },
+ ()=>{ const v=vennData();
+   return mc('Bekijk het Venn-diagram. Wat is <b>A ∪ B</b> (de unie van A en B)?', setS(v.U),
+     others(setS(v.U),[setS(v.I),setS(v.A),setS(v.B),setS([...v.U,...v.out])]),
+     `A ∪ B bevat alle elementen die in A <b>of</b> in B zitten (of in allebei). Elementen buiten de cirkels horen er niet bij. A ∪ B = ${setS(v.U)}.`, figVenn(v.aO,v.I,v.bO,v.out)); },
+ ()=>{ const v=vennData(), S={A:v.A,B:v.B,'A ∩ B':v.I,'A ∪ B':v.U}, all=[...v.U,...v.out], st=[];
+   for(let k=0;k<60;k++){ const x=pick(all), s=pick(Object.keys(S)), sym=pick(['∈','∉']); st.push([`${x} ${sym} ${s}`, S[s].includes(x)===(sym==='∈')]); }
+   const [c,w]=trueFalse(st);
+   return mc('Bekijk het Venn-diagram. Welke uitspraak is <b>juist</b>?', c, w,
+     `∈ betekent "is een element van", ∉ betekent "is geen element van".<br>A = ${setS(v.A)}, B = ${setS(v.B)}<br>A ∩ B = ${setS(v.I)}, A ∪ B = ${setS(v.U)}`, figVenn(v.aO,v.I,v.bO,v.out)); },
+ ()=>{ const pool=shuffle(range(1,30)), aO=pool.slice(0,rint(2,4)), bI=pool.slice(4,4+rint(2,3)), out=pool.slice(8,8+rint(1,2));
+   const [c,w]=trueFalse([['B ⊂ A',1],['A ∩ B = B',1],['A ∪ B = A',1],['A ⊂ B',0],['A ∩ B = ∅',0],['A ∪ B = B',0],['A ∩ B = A',0],[`${pick(aO)} ∈ B`,0],[`${pick(bI)} ∉ A`,0]]);
+   return mc('Bekijk het Venn-diagram. Welke uitspraak is <b>juist</b>?', c, w,
+     `Elk element van B zit ook in A. B is dus een <b>deelverzameling</b> van A: B ⊂ A.<br>Daarom is A ∩ B = B en A ∪ B = A.<br>A = ${setS([...aO,...bI])}, B = ${setS(bI)}`, figVennSub(aO,bI,out)); },
+ ()=>{ const v=vennData(), k=pick(['∩','∪']), ans=k==='∩'?v.I.length:v.U.length;
+   return num(`Hoeveel elementen heeft <b>A ${k} B</b>?`, ans, '',
+     k==='∩' ? `A ∩ B = de elementen die in A én in B zitten = ${setS(v.I)}. Dat zijn ${ans} elementen.`
+             : `A ∪ B = de elementen die in A of in B zitten = ${setS(v.U)}. Tel de gemeenschappelijke elementen maar één keer: ${ans} elementen.`,
+     null, [`A = ${setS(v.A)}`,`B = ${setS(v.B)}`], `aantal elementen van A ${k} B`); },
+ /* 1.4 Getallen in tabellen en diagrammen */
+ ()=>{ const th=pick([{t:'Lievelingssport van de leerlingen van het eerste jaar',c:['voetbal','tennis','zwemmen','basket','dans'],u:'aantal leerlingen'},
+                      {t:'Aantal gelezen boeken per maand in de klas',c:['sept','okt','nov','dec','jan'],u:'aantal boeken'},
+                      {t:'Aantal bezoekers van de bibliotheek',c:['ma','di','wo','do','vr'],u:'aantal bezoekers'}]);
+   const step=pick([2,5,10]); let vals; do{ vals=th.c.map(()=>step*rint(1,8)); }while(uniq(vals).length<4);
+   const fig=figBars(th.c,vals,step,th.u);
+   if(Math.random()<.5){ const tot=vals.reduce((s,x)=>s+x,0);
+     return num(`<b>${th.t}</b><br>Lees het staafdiagram af. Hoeveel is dat <b>samen</b> (voor alle staven)?`, tot, '',
+       `Afgelezen: ${th.c.map((c,i)=>`${c} ${vals[i]}`).join(', ')}.<br>Samen: ${vals.join(' + ')} = ${tot}.`, fig); }
+   let i,j; do{ i=rint(0,4); j=rint(0,4); }while(vals[i]<=vals[j]);
+   return num(`<b>${th.t}</b><br>Lees het staafdiagram af. Hoeveel meer bij <b>${th.c[i]}</b> dan bij <b>${th.c[j]}</b>?`, vals[i]-vals[j], '',
+     `${th.c[i]}: ${vals[i]}, ${th.c[j]}: ${vals[j]}.<br>Verschil: ${vals[i]} − ${vals[j]} = ${vals[i]-vals[j]}.`, fig); },
+ ()=>{ const days=['maandag','dinsdag','woensdag','donderdag','vrijdag']; let v; do{ v=days.map(()=>rint(12,95)); }while(uniq(v).length<5);
+   const most=Math.random()<.5, val=most?Math.max(...v):Math.min(...v), k=v.indexOf(val);
+   const tab=`<table class="dtab"><tr><th>dag</th>${days.map(d=>`<th>${d.slice(0,2)}</th>`).join('')}</tr><tr><td>broodjes</td>${v.map(x=>`<td>${x}</td>`).join('')}</tr></table>`;
+   return mc(`De tabel toont hoeveel broodjes de schoolrefter per dag verkocht.${tab}Op welke dag werden de <b>${most?'meeste':'minste'}</b> broodjes verkocht?`, days[k], others(days[k],days),
+     `Vergelijk de getallen in de tabel: ${days.map((d,i)=>`${d.slice(0,2)} ${v[i]}`).join(', ')}. Het ${most?'grootste':'kleinste'} getal is ${val} (${days[k]}).`); },
+ ()=>{ const s=pick([['Je wil tonen hoe de temperatuur verandert tijdens een week.','een lijndiagram','Een lijndiagram toont goed hoe iets verandert in de tijd.'],
+                     ['Je wil tonen welk deel van je zakgeld naar snoep, kleren en sparen gaat.','een cirkeldiagram','Een cirkeldiagram toont goed de delen van één geheel.'],
+                     ['Je wil het aantal leerlingen in vijf klassen met elkaar vergelijken.','een staafdiagram','Een staafdiagram is handig om aantallen te vergelijken.']]);
+   return mc(s[0]+' Welk diagram past daar het best bij?', s[1], ['een lijndiagram','een cirkeldiagram','een staafdiagram'].filter(x=>x!==s[1]), s[2]); },
+ /* 1.5 Getallen en letters */
+ ()=>{ const t=rint(0,4); let a=rint(2,9), b=rint(2,9), c=rint(1,9), e, v, geg;
+   if(t===0){ e=`3 · a + b`; v=3*a+b; geg=[`a = ${a}`,`b = ${b}`]; }
+   if(t===1){ while(a*b<=c) c=rint(1,9); e=`a · b − c`; v=a*b-c; geg=[`a = ${a}`,`b = ${b}`,`c = ${c}`]; }
+   if(t===2){ e=`2 · (a + b)`; v=2*(a+b); geg=[`a = ${a}`,`b = ${b}`]; }
+   if(t===3){ while(4*a<=b) b=rint(1,9); e=`4 · a − b`; v=4*a-b; geg=[`a = ${a}`,`b = ${b}`]; }
+   if(t===4){ e=`a · a + b`; v=a*a+b; geg=[`a = ${a}`,`b = ${b}`]; }
+   const sub=e.replace(/[abc]/g,x=>({a,b,c})[x]);
+   return num(`Vervang de letters door de getallen en bereken.<div class="expr">${e}</div>`, v, '',
+     `Vul in: ${sub} = ${v}<br>Let op de volgorde: eerst haakjes, dan vermenigvuldigen, dan optellen en aftrekken.`, null, geg, `de waarde van ${e}`); },
+ ()=>{ if(Math.random()<.5){ const l=rint(5,20), b=rint(2,l-1);
+     return num('De omtrek van een rechthoek bereken je met de formule <b>o = 2 · (l + b)</b>. Bereken de omtrek.', 2*(l+b), 'cm',
+       `o = 2 · (l + b) = 2 · (${l} + ${b}) = 2 · ${l+b} = ${2*(l+b)} cm`, null, [`lengte l = ${l} cm`,`breedte b = ${b} cm`], 'omtrek o (in cm)'); }
+   const s=rint(2,5), p=rint(2,4), k=rint(3,15);
+   return num(`Een taxirit kost <b>p = ${s} + ${p} · k</b> euro. Daarbij is k het aantal kilometer. Hoeveel kost de rit?`, s+p*k, 'euro',
+     `p = ${s} + ${p} · ${k} = ${s} + ${p*k} = ${s+p*k} euro`, null, [`formule p = ${s} + ${p} · k`,`k = ${k} km`], 'prijs p (in euro)'); },
+ ()=>{ const s=pick([['het drievoud van x','3 · x',['x + 3','x³','x : 3']],
+                     ['x vermeerderd met 7','x + 7',['7 · x','x − 7','7 − x']],
+                     ['het dubbel van x, verminderd met 5','2 · x − 5',['2 · (x − 5)','5 − 2 · x','x² − 5']],
+                     ['het kwadraat van x','x²',['2 · x','x + 2','x + x']],
+                     ['de helft van x','x : 2',['2 · x','x − 2','x²']],
+                     ['de som van x en 4, vermenigvuldigd met 3','(x + 4) · 3',['x + 4 · 3','3 · x + 4','x · 4 + 3']]]);
+   return mc(`Hoe schrijf je <b>"${s[0]}"</b> met een letter?`, s[1], s[2], `"${s[0]}" schrijf je als ${s[1]}.`); },
+ ()=>{ const s=pick([['a + a + a + a','4 · a',['a⁴','a + 4','4 + a'],'Vier keer a optellen is 4 · a.'],
+                     ['a · a · a','a³',['3 · a','a + 3','3 + a'],'Drie keer a met zichzelf vermenigvuldigen is a³ (een macht).'],
+                     ['b + b','2 · b',['b²','b + 2','2 + b'],'Twee keer b optellen is 2 · b.'],
+                     ['x · x','x²',['2 · x','x + 2','x + x'],'x maal x is x² (x kwadraat).']]);
+   return mc(`Welke uitdrukking is gelijk aan <b>${s[0]}</b>?`, s[1], s[2], s[3]); },
+],
+N:[
+ /* 2.1 De natuurlijke getallen */
+ ()=>{ const n=pick([rint(1,9)*1000, rint(1,9)*10000, rint(10,99)*100, rint(1,9)*100000, rint(101,999)*10]), vg=Math.random()<.5;
+   return num(`Wat is de <b>${vg?'voorganger':'opvolger'}</b> van ${big(n)}?`, vg?n-1:n+1, '',
+     vg ? `De voorganger is het getal dat er net vóór komt: ${big(n)} − 1 = ${big(n-1)}.` : `De opvolger is het getal dat er net na komt: ${big(n)} + 1 = ${big(n+1)}.`); },
+ ()=>{ const a=rint(10,200), b=a+rint(5,40);
+   return num(`Hoeveel natuurlijke getallen liggen er <b>tussen</b> ${a} en ${b}? (${a} en ${b} zelf tellen niet mee.)`, b-a-1, '',
+     `De getallen ${a+1}, ${a+2}, …, ${b-1}. Dat zijn ${b-1} − ${a+1} + 1 = ${b-a-1} getallen.<br>Kort: ${b} − ${a} − 1 = ${b-a-1}.`); },
+ ()=>tfPick([
+   ['0 is een natuurlijk getal.', true, 'Waar. ℕ = {0, 1, 2, 3, …}. Het kleinste natuurlijke getal is 0.'],
+   ['Elk natuurlijk getal heeft een voorganger in ℕ.', false, 'Onwaar. 0 heeft geen voorganger in ℕ.'],
+   ['Elk natuurlijk getal heeft een opvolger in ℕ.', true, 'Waar. Bij elk natuurlijk getal kan je 1 optellen.'],
+   ['Er bestaat een grootste natuurlijk getal.', false, 'Onwaar. Je kan altijd 1 optellen, dus ℕ is oneindig.'],
+   ['ℕ₀ is de verzameling van de natuurlijke getallen zonder 0.', true, 'Waar. ℕ₀ = {1, 2, 3, …}.'],
+   ['0 ∈ ℕ₀', false, 'Onwaar. ℕ₀ = ℕ zonder 0 = {1, 2, 3, …}. Dus 0 ∉ ℕ₀.'],
+ ]),
+ /* 2.2 Deelverzamelingen van ℕ */
+ ()=>{ const n=pick([12,16,18,20,24,28,30,32,36,40,42,45,48]), D=divs(n), mid=D.filter(d=>d!==1&&d!==n);
+   const miss=D.filter(d=>d!==pick(mid)), extra=uniq([...D, pick(range(2,n-1).filter(x=>n%x!==0))]);
+   return mc(`Wat is <b>del ${n}</b> (de verzameling van de delers van ${n})?`, setS(D),
+     others(setS(D),[setS(miss),setS(extra),`{0, ${n}, ${2*n}, ${3*n}, …}`,setS(mid)]),
+     `De delers van ${n} zijn de getallen waardoor je ${n} kan delen zonder rest: del ${n} = ${setS(D)}.<br>Vergeet 1 en ${n} zelf niet.`); },
+ ()=>{ const k=rint(3,12);
+   return mc(`Welke verzameling is <b>${k}ℕ</b> (de veelvouden van ${k})?`, `{0, ${k}, ${2*k}, ${3*k}, …}`,
+     [`{${k}, ${2*k}, ${3*k}, ${4*k}, …}`, setS(divs(k)), `{0, 1, 2, …, ${k}}`],
+     `${k}ℕ = {0, ${k}, ${2*k}, ${3*k}, …}: je vermenigvuldigt ${k} met 0, 1, 2, 3, …<br>Let op: 0 is een veelvoud van elk getal (${k} · 0 = 0).`); },
+ ()=>{ const st=[];
+   for(let i=0;i<40;i++){ const t=rint(0,3);
+     if(t===0){ const k=rint(3,9), m=rint(10,80); st.push([`${m} ∈ ${k}ℕ`, m%k===0]); }
+     if(t===1){ const n=pick([12,18,20,24,30,36]), d=rint(2,15); st.push([`${d} ∈ del ${n}`, n%d===0]); }
+     if(t===2){ const k=rint(2,9); st.push(pick([[`0 ∈ ${k}ℕ`,true],[`0 ∈ ℕ₀`,false],[`1 ∈ del ${rint(5,40)}`,true]])); }
+     if(t===3){ const k=rint(3,9), m=k*rint(2,9); st.push([`${m} ∉ ${k}ℕ`, false]); }
+   }
+   const [c,w]=trueFalse(st);
+   return mc('Welke uitspraak is <b>juist</b>?', c, w,
+     `kℕ zijn de veelvouden van k (0 hoort er ook bij). del n zijn de delers van n. ℕ₀ = ℕ zonder 0.<br>De juiste uitspraak is: ${c}.`); },
+ ()=>{ const n=pick([12,15,16,18,20,24,28,30,36,40,45,48,50,60]), D=divs(n);
+   return num(`Hoeveel delers heeft ${n}?`, D.length, '', `del ${n} = ${setS(D)}. Dat zijn ${D.length} delers.`, null, [`het getal ${n}`], `het aantal elementen van del ${n}`); },
+ ()=>tfPick([
+   ['1 is een deler van elk natuurlijk getal.', true, 'Waar. Elk getal n = 1 · n.'],
+   ['0 is een veelvoud van elk natuurlijk getal.', true, 'Waar. k · 0 = 0 voor elk getal k.'],
+   ['Een natuurlijk getal (verschillend van 0) heeft oneindig veel delers.', false, 'Onwaar. Een getal heeft maar een beperkt aantal delers, maar wel oneindig veel veelvouden.'],
+   ['Een natuurlijk getal (verschillend van 0) heeft oneindig veel veelvouden.', true, 'Waar. k, 2k, 3k, … gaat oneindig ver door.'],
+   ['Elk getal is een deler van zichzelf.', true, 'Waar. n : n = 1, zonder rest.'],
+   ['Een even getal is een veelvoud van 2.', true, 'Waar. Even getallen: 0, 2, 4, 6, … = 2ℕ.'],
+ ]),
+ /* 2.3 Bewerkingen */
+ ()=>{ const t=rint(0,5); let e,v,u;
+   if(t===0){ const a=rint(5,30),b=rint(2,9),c=rint(2,9); e=`${a} + ${b} · ${c}`; v=a+b*c; u=`Eerst vermenigvuldigen: ${b} · ${c} = ${b*c}<br>Dan optellen: ${a} + ${b*c} = ${v}`; }
+   if(t===1){ const c=rint(2,9),k=rint(2,9),b=c*k,a=rint(k+1,40); e=`${a} − ${b} : ${c}`; v=a-k; u=`Eerst delen: ${b} : ${c} = ${k}<br>Dan aftrekken: ${a} − ${k} = ${v}`; }
+   if(t===2){ const a=rint(2,12),b=rint(2,9),c=rint(2,6),d=rint(1,(a+b)*c-1); e=`(${a} + ${b}) · ${c} − ${d}`; v=(a+b)*c-d; u=`Eerst de haakjes: ${a} + ${b} = ${a+b}<br>Dan vermenigvuldigen: ${a+b} · ${c} = ${(a+b)*c}<br>Dan aftrekken: ${(a+b)*c} − ${d} = ${v}`; }
+   if(t===3){ let a,b,c,d; do{ a=rint(3,12);b=rint(3,9);c=rint(2,9);d=rint(2,9); }while(a*b<=c*d); e=`${a} · ${b} − ${c} · ${d}`; v=a*b-c*d; u=`Eerst de vermenigvuldigingen: ${a} · ${b} = ${a*b} en ${c} · ${d} = ${c*d}<br>Dan aftrekken: ${a*b} − ${c*d} = ${v}`; }
+   if(t===4){ const b=rint(4,15), c=rint(1,b-2), q=b-c, k=rint(2,9), a=q*k, d=rint(2,20); e=`${a} : (${b} − ${c}) + ${d}`; v=k+d; u=`Eerst de haakjes: ${b} − ${c} = ${q}<br>Dan delen: ${a} : ${q} = ${k}<br>Dan optellen: ${k} + ${d} = ${v}`; }
+   if(t===5){ const a=rint(2,6),b=rint(2,9),c=rint(2,9); e=`${a}² + ${b} · ${c}`; v=a*a+b*c; u=`Eerst de macht: ${a}² = ${a} · ${a} = ${a*a}<br>Dan vermenigvuldigen: ${b} · ${c} = ${b*c}<br>Dan optellen: ${a*a} + ${b*c} = ${v}`; }
+   return num(`Bereken. Let op de volgorde van de bewerkingen.<div class="expr">${e}</div>`, v, '',
+     u+'<br><i>Volgorde: 1) haakjes, 2) machten, 3) vermenigvuldigen en delen van links naar rechts, 4) optellen en aftrekken van links naar rechts.</i>'); },
+ ()=>{ const a=rint(2,30), b=rint(2,30), c=rint(2,30);
+   const E=[['wisseleigenschap (commutatief)',`${a} + ${b} = ${b} + ${a}`,'Je wisselt de getallen van plaats; de uitkomst blijft gelijk.'],
+            ['wisseleigenschap (commutatief)',`${a} · ${b} = ${b} · ${a}`,'Je wisselt de getallen van plaats; de uitkomst blijft gelijk.'],
+            ['schakeleigenschap (associatief)',`(${a} + ${b}) + ${c} = ${a} + (${b} + ${c})`,'Je mag de haakjes verschuiven (anders groeperen); de volgorde van de getallen blijft.'],
+            ['schakeleigenschap (associatief)',`(${a} · ${b}) · ${c} = ${a} · (${b} · ${c})`,'Je mag de haakjes verschuiven (anders groeperen); de volgorde van de getallen blijft.'],
+            ['verdeeleigenschap (distributief)',`${a} · (${b} + ${c}) = ${a} · ${b} + ${a} · ${c}`,'Je vermenigvuldigt elk getal tussen de haakjes met het getal ervoor.'],
+            ['neutraal element',`${a} + 0 = ${a}`,'0 is het neutraal element van de optelling: het getal verandert niet.'],
+            ['neutraal element',`${a} · 1 = ${a}`,'1 is het neutraal element van de vermenigvuldiging: het getal verandert niet.'],
+            ['opslorpend element',`${a} · 0 = 0`,'0 is het opslorpend element van de vermenigvuldiging: de uitkomst is altijd 0.']];
+   const e=pick(E);
+   return mc(`Welke eigenschap wordt hier gebruikt?<div class="expr">${e[1]}</div>`, e[0], others(e[0],E.map(x=>x[0])), e[2]); },
+ ()=>tfPick([
+   ['De aftrekking in ℕ is commutatief: a − b = b − a.', false, 'Onwaar. Bijvoorbeeld 7 − 3 = 4, maar 3 − 7 kan niet in ℕ.'],
+   ['1 is het neutraal element van de vermenigvuldiging.', true, 'Waar. a · 1 = a.'],
+   ['0 is het neutraal element van de vermenigvuldiging.', false, 'Onwaar. a · 0 = 0, dus 0 is het <i>opslorpend</i> element. Het neutraal element is 1.'],
+   ['De deling is commutatief: a : b = b : a.', false, 'Onwaar. Bijvoorbeeld 8 : 2 = 4, maar 2 : 8 is geen 4.'],
+   ['De optelling in ℕ is associatief.', true, 'Waar. (a + b) + c = a + (b + c).'],
+ ]),
+ /* 2.4 Deelbaarheid */
+ ()=>{ const d=rint(3,12), q=rint(5,40), r=rint(1,d-1), D=d*q+r, k=pick(['q','r','D']);
+   const u=`deeltal = deler · quotiënt + rest<br>${D} = ${d} · ${q} + ${r}<br>De rest (${r}) is altijd kleiner dan de deler (${d}).`;
+   if(k==='D') return num('Bij een niet-opgaande deling ken je de deler, het quotiënt en de rest. Wat is het deeltal?', D, '', u, null,
+     [`deler = ${d}`,`quotiënt = ${q}`,`rest = ${r}`], 'het deeltal');
+   return num(`Voer de deling uit. Het is een niet-opgaande deling. Wat is ${k==='q'?'het <b>quotiënt</b>':'de <b>rest</b>'}?<div class="expr">${D} : ${d}</div>`, k==='q'?q:r, '', u, null,
+     [`deeltal = ${D}`,`deler = ${d}`], k==='q'?'het quotiënt':'de rest'); },
+ ()=>{ const d=pick([2,3,4,5,9,10,25,100]); let c; do{ c=rint(1000,99999); c-=c%d; }while(c<1000);
+   const DEL={2:[1,3,5,7],3:[1,2,4,5,7],4:[2,6,10,14,18],5:[1,2,3,4,6],9:[3,6,1,2,4],10:[5,2,4,6],25:[5,10,15,35,40,30],100:[10,20,50,60,30]};
+   const K={2:'het laatste cijfer even is (0, 2, 4, 6 of 8)',3:'de som van de cijfers deelbaar is door 3',4:'het getal gevormd door de laatste twee cijfers deelbaar is door 4',
+            5:'het laatste cijfer 0 of 5 is',9:'de som van de cijfers deelbaar is door 9',10:'het laatste cijfer 0 is',25:'de laatste twee cijfers 00, 25, 50 of 75 zijn',100:'de laatste twee cijfers 00 zijn'};
+   const extra=(d===3||d===9)?`<br>Cijfersom van ${big(c)}: ${digits(c).join(' + ')} = ${dsum(c)}, en ${dsum(c)} is deelbaar door ${d}.`:'';
+   return mc(`Welk getal is <b>deelbaar door ${d}</b>?`, big(c), shuffle(DEL[d]).slice(0,3).map(x=>big(c+x)),
+     `Een getal is deelbaar door ${d} als ${K[d]}.${extra}`); },
+ ()=>{ const d=pick([3,9]), pre=rint(10,99), post=rint(0,9), base=dsum(pre)+post, ok=range(0,9).filter(x=>(base+x)%d===0), c=pick(ok);
+   return mc(`Welk cijfer kan je op de plaats van ★ zetten zodat het getal <b>deelbaar is door ${d}</b>?<div class="expr">${pre}★${post}</div>`, String(c),
+     shuffle(range(0,9).filter(x=>!ok.includes(x))).slice(0,3).map(String),
+     `Kenmerk: de som van de cijfers moet deelbaar zijn door ${d}.<br>${digits(pre).join(' + ')} + ★ + ${post} = ${base} + ★<br>Met ★ = ${c} wordt de cijfersom ${base+c}, en dat is deelbaar door ${d}.`); },
+ ()=>tfPick([
+   ['Een getal dat deelbaar is door 9, is ook deelbaar door 3.', true, 'Waar. 9 = 3 · 3: is een getal een veelvoud van 9, dan ook van 3.'],
+   ['Een getal dat deelbaar is door 3, is ook deelbaar door 9.', false, 'Onwaar. Bijvoorbeeld 12 is deelbaar door 3, maar niet door 9.'],
+   ['Een getal dat deelbaar is door 2 en door 3, is ook deelbaar door 6.', true, 'Waar. 2 en 3 hebben geen gemeenschappelijke delers behalve 1, en 2 · 3 = 6.'],
+   ['Een getal dat deelbaar is door 2 en door 4, is ook deelbaar door 8.', false, 'Onwaar. Bijvoorbeeld 12 is deelbaar door 2 en door 4, maar niet door 8.'],
+   ['Een getal dat deelbaar is door 100, is ook deelbaar door 25.', true, 'Waar. 100 = 4 · 25.'],
+   ['Elk getal dat eindigt op 4, is deelbaar door 4.', false, 'Onwaar. Bijvoorbeeld 14 is niet deelbaar door 4. Je moet naar de laatste twee cijfers kijken.'],
+ ]),
+ ()=>{ let g,p,q; do{ g=pick([2,3,4,5,6,7,8,9,12]); p=rint(2,9); q=rint(2,9); }while(p===q||gcd(p,q)!==1||g*Math.max(p,q)>100);
+   const a=g*p, b=g*q, cm=divs(a).filter(x=>b%x===0);
+   return num(`Bereken de grootste gemeenschappelijke deler.<div class="expr">ggd(${a}, ${b})</div>`, g, '',
+     `del ${a} = ${setS(divs(a))}<br>del ${b} = ${setS(divs(b))}<br>Gemeenschappelijke delers: ${setS(cm)}<br>De grootste is ${g}, dus ggd(${a}, ${b}) = ${g}.`, null,
+     [`a = ${a}`,`b = ${b}`], `ggd(${a}, ${b})`); },
+ ()=>{ let a,b; do{ a=rint(3,20); b=rint(3,20); }while(a>=b||b%a===0||lcm(a,b)>150);
+   const l=lcm(a,b), V=[]; for(let m=b;m<=l;m+=b) V.push(m);
+   return num(`Bereken het kleinste gemeenschappelijk veelvoud.<div class="expr">kgv(${a}, ${b})</div>`, l, '',
+     `Veelvouden van ${b}: ${V.join(', ')}, …<br>Het eerste (≠ 0) dat ook een veelvoud is van ${a}, is ${l}. Dus kgv(${a}, ${b}) = ${l}.`, null,
+     [`a = ${a}`,`b = ${b}`], `kgv(${a}, ${b})`); },
+ ()=>{ if(Math.random()<.5){ let a,b; do{ a=rint(4,20); b=rint(4,20); }while(a>=b||b%a===0||lcm(a,b)>120);
+     return num(`Twee bussen vertrekken <b>samen</b> om 8.00 uur aan de schoolpoort. Bus A vertrekt elke ${a} minuten, bus B elke ${b} minuten. Na hoeveel minuten vertrekken ze <b>opnieuw samen</b>?`, lcm(a,b), 'min',
+       `Je zoekt het kleinste getal dat een veelvoud is van ${a} én van ${b}: kgv(${a}, ${b}) = ${lcm(a,b)}.<br>Na ${lcm(a,b)} minuten vertrekken ze opnieuw samen.`, null,
+       [`bus A: om de ${a} min`,`bus B: om de ${b} min`], 'aantal minuten tot ze weer samen vertrekken'); }
+   let g,p,q; do{ g=rint(3,12); p=rint(2,7); q=rint(2,7); }while(p===q||gcd(p,q)!==1);
+   const r=g*p, w=g*q;
+   return num(`Je maakt boeketten met ${r} rode en ${w} witte rozen. Alle boeketten moeten precies hetzelfde zijn en je gebruikt alle rozen. Hoeveel boeketten kan je <b>maximaal</b> maken?`, g, 'boeketten',
+     `Het aantal boeketten moet een deler zijn van ${r} én van ${w}. Het grootste: ggd(${r}, ${w}) = ${g}.<br>Elk boeket heeft dan ${p} rode en ${q} witte rozen.`, null,
+     [`${r} rode rozen`,`${w} witte rozen`], 'maximaal aantal boeketten'); },
+ ()=>{ const P=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97], NP=[1,9,15,21,27,33,39,49,51,57,63,69,77,81,87,91,93];
+   const why=n=>{ if(n===1) return '1 heeft maar één deler'; const d=range(2,n).find(x=>n%x===0); return `${n} = ${d} · ${n/d}`; };
+   if(Math.random()<.5){ const c=pick(P), w=shuffle(NP).slice(0,3);
+     return mc('Welk getal is een <b>priemgetal</b>?', String(c), w.map(String),
+       `Een priemgetal heeft precies twee delers: 1 en zichzelf. ${c} is een priemgetal.<br>De andere niet: ${w.map(why).join('; ')}.`); }
+   const c=pick(NP), w=shuffle(P.filter(x=>x>10)).slice(0,3);
+   return mc('Welk getal is <b>géén</b> priemgetal?', String(c), w.map(String),
+     `Een priemgetal heeft precies twee delers: 1 en zichzelf. ${why(c)}, dus ${c} is geen priemgetal.`); },
+],
+M:[
+ /* 3.1.3 en 3.1.4 Ruimtefiguren, vlakke figuren, meetkundige figuren */
+ ()=>{ const k=pick(Object.keys(SOL));
+   return mc('Hoe heet deze <b>ruimtefiguur</b>?', k, others(k,Object.keys(SOL)),
+     `Dit is een ${k}. Gestippelde lijnen zijn ribben of randen die je van hieruit niet ziet.`, figSolid(k)); },
+ ()=>{ const k=pick([...Object.keys(PLAT),'cirkel']);
+   const why={driehoek:'3 zijden',vierkant:'4 gelijke zijden en 4 rechte hoeken',rechthoek:'4 rechte hoeken, 2 paar gelijke zijden',ruit:'4 gelijke zijden, maar geen rechte hoeken',
+     parallellogram:'2 paar evenwijdige zijden, geen rechte hoeken',trapezium:'precies 1 paar evenwijdige zijden',cirkel:'alle punten liggen even ver van het middelpunt'};
+   return mc('Hoe heet deze <b>vlakke figuur</b>?', k, others(k,[...Object.keys(PLAT),'cirkel']), `Dit is een ${k}: ${why[k]}.`, figPlat(k)); },
+ ()=>{ const s=pick([['een blikje frisdrank','cilinder'],['een dobbelsteen','kubus'],['een voetbal','bol'],['een ijshoorntje','kegel'],['een schoenendoos','balk'],['een knikker','bol'],['een verkeerskegel','kegel'],['een rol keukenpapier','cilinder']]);
+   return mc(`Welke ruimtefiguur heeft de vorm van <b>${s[0]}</b>?`, s[1], others(s[1],['cilinder','kubus','bol','kegel','balk','piramide']), `${s[0][0].toUpperCase()+s[0].slice(1)} heeft de vorm van een ${s[1]}.`); },
+ ()=>{ const v=Math.random()<.5, pl=shuffle([...Object.keys(PLAT),'cirkel']), so=shuffle(Object.keys(SOL));
+   return v ? mc('Welke figuur is een <b>vlakke figuur</b>?', pl[0], so.slice(0,3), `Een ${pl[0]} ligt helemaal in een vlak (2D). Een ${so.slice(0,3).join(', een ')} zijn ruimtefiguren (3D).`)
+            : mc('Welke figuur is een <b>ruimtefiguur</b>?', so[0], pl.slice(0,3), `Een ${so[0]} is een ruimtefiguur (3D): hij heeft lengte, breedte én hoogte. De andere zijn vlakke figuren (2D).`); },
+ ()=>{ const D={kubus:[6,12,8],balk:[6,12,8],piramide:[5,8,5],prisma:[5,9,6]}, k=pick(Object.keys(D)), t=rint(0,2);
+   const W=['vlakken','ribben','hoekpunten'];
+   return num(`Hoeveel <b>${W[t]}</b> heeft deze ruimtefiguur (een ${k})? Tel ook de ${W[t]} die je niet ziet (gestippeld).`, D[k][t], W[t],
+     `Een ${k} heeft ${D[k][0]} vlakken, ${D[k][1]} ribben en ${D[k][2]} hoekpunten.`, figSolid(k)); },
+ /* 3.2 Basisbegrippen */
+ ()=>{ const k=pick(['rechte','lijnstuk','halfrechte']), rev=k==='halfrechte'&&Math.random()<.5;
+   const nota={rechte:'AB',lijnstuk:'[AB]',halfrechte:rev?'[BA':'[AB'};
+   if(Math.random()<.5) return mc('Welke <b>notatie</b> hoort bij de blauwe figuur?', nota[k], others(nota[k],['AB','[AB]','[AB','[BA','|AB|']),
+     `Dit is een ${k}. Notaties: rechte AB, lijnstuk [AB], halfrechte [AB (begint in A en gaat door B), lengte |AB|.`+(rev?' Hier begint de halfrechte in B en gaat ze door A: [BA.':''), figBasic(k,rev));
+   return mc('Hoe noem je de blauwe figuur?', k, others(k,['rechte','lijnstuk','halfrechte','vlak']),
+     'Een rechte is onbegrensd aan twee kanten. Een lijnstuk heeft twee eindpunten. Een halfrechte heeft één beginpunt en is aan de andere kant onbegrensd.', figBasic(k,rev)); },
+ ()=>tfPick([
+   ['Door twee verschillende punten gaat precies één rechte.', true, 'Waar. Twee punten bepalen één rechte.'],
+   ['Een lijnstuk heeft twee eindpunten.', true, 'Waar. Lijnstuk [AB] begint in A en eindigt in B.'],
+   ['Een halfrechte heeft twee eindpunten.', false, 'Onwaar. Een halfrechte heeft één beginpunt en loopt aan de andere kant oneindig door.'],
+   ['Een rechte heeft een beginpunt en een eindpunt.', false, 'Onwaar. Een rechte loopt aan twee kanten oneindig door.'],
+   ['Door één punt gaan oneindig veel rechten.', true, 'Waar. Je kan door één punt rechten in elke richting tekenen.'],
+   ['[AB] en [BA] zijn hetzelfde lijnstuk.', true, 'Waar. Een lijnstuk heeft twee eindpunten; de volgorde maakt niet uit.'],
+   ['[AB en [BA zijn dezelfde halfrechte.', false, 'Onwaar. [AB begint in A en gaat door B; [BA begint in B en gaat door A. Ze lopen in tegengestelde zin.'],
+   ['|AB| is een getal: de lengte van lijnstuk [AB].', true, 'Waar. |AB| is de afstand tussen A en B, bv. |AB| = 5 cm.'],
+ ]),
+ ()=>{ const ab=rint(2,9), bc=rint(2,9), ask=pick(['AC','BC']);
+   return ask==='AC'
+     ? num('De punten A, B en C liggen op één rechte, in die volgorde. Hoe lang is <b>|AC|</b>?', ab+bc, 'cm', `|AC| = |AB| + |BC| = ${ab} + ${bc} = ${ab+bc} cm`, figSeg(ab,bc,'AC'), [`|AB| = ${ab} cm`,`|BC| = ${bc} cm`], '|AC| (in cm)')
+     : num('De punten A, B en C liggen op één rechte, in die volgorde. Hoe lang is <b>|BC|</b>?', bc, 'cm', `|BC| = |AC| − |AB| = ${ab+bc} − ${ab} = ${bc} cm`, figSeg(ab,bc,'BC'), [`|AB| = ${ab} cm`,`|AC| = ${ab+bc} cm`], '|BC| (in cm)'); },
+ ()=>{ const n=rint(3,5), L='ABCDEF', ls=[]; for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) ls.push(`[${L[i]}${L[j]}]`);
+   return num(`Op een rechte liggen ${n} punten. Hoeveel <b>lijnstukken</b> kan je tekenen met twee van deze punten als eindpunten?`, ls.length, 'lijnstukken',
+     `Systematisch opsommen: ${ls.join(', ')}. Dat zijn er ${ls.length}.`, figPoints(n)); },
+ /* 3.3 Onderlinge ligging */
+ ()=>{ const k=pick(['par','perp','snij']);
+   const C={par:'a ∥ b (a en b zijn evenwijdig)',perp:'a ⊥ b (a en b staan loodrecht op elkaar)',snij:'a en b snijden elkaar, maar staan niet loodrecht'};
+   const U={par:'De rechten snijden elkaar nergens: ze zijn (strikt) evenwijdig, a ∥ b.',perp:'De rechten snijden elkaar onder een rechte hoek (90°, zie het hoekje): a ⊥ b.',snij:'De rechten snijden elkaar in S, maar niet onder een rechte hoek: ze zijn snijdend.'};
+   return mc('Wat is de onderlinge ligging van de rechten a en b?', C[k], [...Object.values(C).filter(x=>x!==C[k]),'a en b vallen samen (a = b)'], U[k], figLines(k)); },
+ ()=>{ if(Math.random()<.25) return mc('De rechten a en b zijn <b>samenvallend</b>. Wat is a ∩ b?', 'a', ['∅','{S}','{a, b}'],
+     'Samenvallende rechten hebben alle punten gemeen. De doorsnede is dus de hele rechte: a ∩ b = a (= b).');
+   const k=pick(['par','perp','snij']), c=k==='par'?'∅':'{S}';
+   return mc('Bekijk de tekening. Wat is <b>a ∩ b</b>?', c, others(c,['∅','{S}','a','{a, b}']),
+     k==='par' ? 'Strikt evenwijdige rechten hebben geen enkel punt gemeen: a ∩ b = ∅ (lege verzameling).' : 'Snijdende rechten hebben precies één punt gemeen, het snijpunt S: a ∩ b = {S}.', figLines(k)); },
+ ()=>{ const s=pick([['a ⊥ b en b ⊥ c','a ∥ c','Twee rechten die allebei loodrecht staan op dezelfde rechte, zijn evenwijdig.'],
+                     ['a ∥ b en b ⊥ c','a ⊥ c','Staat c loodrecht op b, dan ook op elke rechte die evenwijdig is met b.'],
+                     ['a ∥ b en b ∥ c','a ∥ c','Twee rechten die evenwijdig zijn met dezelfde rechte, zijn onderling evenwijdig.']]);
+   return mc(`De rechten a, b en c liggen in hetzelfde vlak. Er geldt: <b>${s[0]}</b>. Wat geldt dan voor a en c?`, s[1],
+     others(s[1],['a ∥ c','a ⊥ c','a en c snijden elkaar, maar niet loodrecht','je kan daar niets over zeggen']), s[2]); },
+ ()=>{ const [c,w]=trueFalse([['AB ∥ DC',1],['AD ∥ BC',1],['AB ⊥ BC',1],['AB ⊥ AD',1],['BC ⊥ CD',1],['AD ⊥ DC',1],
+     ['AB ∥ BC',0],['AB ⊥ DC',0],['AD ⊥ BC',0],['AD ∥ DC',0],['BC ∥ CD',0],['AB ∥ AD',0]]);
+   return mc('ABCD is een rechthoek. Welke uitspraak is <b>juist</b>?', c, w,
+     'In een rechthoek zijn de overstaande zijden evenwijdig (AB ∥ DC en AD ∥ BC). Aanliggende zijden staan loodrecht op elkaar (bv. AB ⊥ BC).', figRect()); },
+ ()=>tfPick([
+   ['Twee loodrechte rechten zijn ook snijdende rechten.', true, 'Waar. Loodrechte rechten snijden elkaar, onder een hoek van 90°.'],
+   ['Twee snijdende rechten hebben precies één punt gemeen.', true, 'Waar. Dat punt is het snijpunt.'],
+   ['Twee strikt evenwijdige rechten hebben geen enkel punt gemeen.', true, 'Waar. Hun doorsnede is leeg: a ∩ b = ∅.'],
+   ['Als a ⊥ b, dan is ook a ∥ b.', false, 'Onwaar. Loodrechte rechten snijden elkaar; evenwijdige rechten (strikt) niet.'],
+   ['Samenvallende rechten hebben maar één punt gemeen.', false, 'Onwaar. Samenvallende rechten hebben álle punten gemeen: a ∩ b = a.'],
+ ]),
+],
+Z:[
+ /* 8.1 De gehele getallen */
+ ()=>{ const t=rint(0,2), x=pick([-1,1])*rint(2,40);
+   if(t===0) return num(`Wat is het <b>tegengestelde</b> van ${zf(x)}?`, -x, '', `Het tegengestelde van een getal heeft dezelfde absolute waarde, maar het andere teken. Het tegengestelde van ${zf(x)} is ${zf(-x)}.<br>Samen geven ze 0: ${zf(x)} + ${zb(-x)} = 0.`);
+   if(t===1) return num(`Bereken de <b>absolute waarde</b>.<div class="expr">|${zf(x)}|</div>`, Math.abs(x), '', `De absolute waarde is de afstand tot 0 op de getallenas. Die is nooit negatief: |${zf(x)}| = ${Math.abs(x)}.`);
+   const y=-rint(2,20);
+   return num(`Bereken.<div class="expr">|${zf(x)}| + |${zf(y)}|</div>`, Math.abs(x)+Math.abs(y), '', `|${zf(x)}| = ${Math.abs(x)} en |${zf(y)}| = ${-y}.<br>${Math.abs(x)} + ${-y} = ${Math.abs(x)-y}`); },
+ ()=>{ const a=rint(2,30);
+   return mc(`Welke getallen hebben <b>absolute waarde ${a}</b>?`, `${a} en −${a}`, [`alleen ${a}`,`alleen −${a}`,`0 en ${a}`],
+     `Zowel ${a} als −${a} liggen op ${a} eenheden van 0. Dus |${a}| = ${a} en |−${a}| = ${a}.`); },
+ ()=>{ const t=rint(0,3); let a,b,sa,sb;
+   if(t===0){ do{ a=-rint(1,20); b=-rint(1,20); }while(a===b); }
+   if(t===1){ a=-rint(1,20); b=rint(1,20); if(Math.random()<.5)[a,b]=[b,a]; }
+   if(t===2){ a=0; b=-rint(1,20); if(Math.random()<.5)[a,b]=[b,a]; }
+   sa=zf(a); sb=zf(b);
+   if(t===3){ const x=rint(2,15); a=x; sa=`|−${x}|`; b=pick([x, -x, x+rint(1,5), x-rint(1,x-1)]); sb=zf(b); }
+   const c=a<b?'<':a>b?'>':'=';
+   return mc(`Welk teken moet op de plaats van ☐ staan?<div class="expr">${sa} ☐ ${sb}</div>`, c, ['<','>','='].filter(x=>x!==c),
+     (t===3?`|−${a}| = ${a}. `:'')+`Op de getallenas ligt het kleinste getal het meest naar links. Een negatief getal is altijd kleiner dan 0 en dan een positief getal. Bij twee negatieve getallen is het getal met de grootste absolute waarde het kleinst (bv. −9 < −4).<br>Dus: ${sa} ${c} ${sb}.`); },
+ ()=>{ let v; do{ v=uniq(range(1,4).map(()=>rint(-15,15))); }while(v.length<4||v.filter(x=>x<0).length<2||uniq(v.map(Math.abs)).length<4);
+   const asc=[...v].sort((a,b)=>a-b), J=a=>a.map(zf).join(' < ');
+   const byAbs=[...v].sort((a,b)=>Math.abs(a)-Math.abs(b)), negWrong=[...v.filter(x=>x<0).sort((a,b)=>b-a).reverse().sort((a,b)=>Math.abs(a)-Math.abs(b)),...v.filter(x=>x>=0).sort((a,b)=>a-b)];
+   return mc('Welke rij staat juist gerangschikt <b>van klein naar groot</b>?', J(asc), others(J(asc),[J(byAbs),J(negWrong),J([...asc].reverse()),J(shuffle(v))]),
+     `Van klein naar groot = van links naar rechts op de getallenas: ${J(asc)}.<br>Let op: bij negatieve getallen is het getal met de grootste absolute waarde het kleinst.`); },
+ ()=>{ const lo=-rint(3,13), hi=lo+16; let v; do{ v=rint(lo+1,hi-1); }while(v%5===0);
+   if(Math.random()<.6) return num('Welk geheel getal hoort bij het punt <b>A</b> op de getallenas?', v, '',
+     `Zoek het dichtstbijzijnde getal dat erbij staat en tel de streepjes. A hoort bij ${zf(v)}.`, figAs(lo,hi,[['A',v,'var(--f1)']]));
+   let w; do{ w=rint(lo+1,hi-1); }while(w%5===0||w===v||Math.abs(w-v)<3);
+   return num('Hoeveel eenheden liggen de punten <b>A</b> en <b>B</b> uit elkaar op de getallenas?', Math.abs(v-w), 'eenheden',
+     `A hoort bij ${zf(v)}, B hoort bij ${zf(w)}. Tel de streepjes ertussen: ${Math.abs(v-w)} eenheden.`, figAs(lo,hi,[['A',v,'var(--f1)'],['B',w,'var(--f3)']])); },
+ ()=>{ const n=-rint(1,20), p=rint(1,20);
+   const [c,w]=trueFalse([[`${zf(n)} ∈ ℤ`,1],[`${p} ∈ ℤ`,1],['ℕ ⊂ ℤ',1],[`${zf(n)} ∉ ℕ`,1],['0 ∈ ℤ',1],
+     [`${zf(n)} ∈ ℕ`,0],['0 ∈ ℤ₀',0],['ℤ ⊂ ℕ',0],[`${zf(n)} ∉ ℤ`,0],[`${p} ∉ ℕ`,0],[`${p} ∉ ℤ`,0]]);
+   return mc('Welke uitspraak is <b>juist</b>?', c, w,
+     'ℕ = {0, 1, 2, 3, …}, ℤ = {…, −3, −2, −1, 0, 1, 2, 3, …}, ℤ₀ = ℤ zonder 0.<br>Elk natuurlijk getal is een geheel getal: ℕ ⊂ ℤ.'); },
+ /* 8.2.1 De optelling */
+ ()=>{ let a,b; do{ a=pick([-1,1])*rint(1,25); b=pick([-1,1])*rint(1,25); }while(a>0&&b>0);
+   const s=a+b, same=(a<0)===(b<0);
+   const u=same ? `Zelfde teken: tel de absolute waarden op (${Math.abs(a)} + ${Math.abs(b)} = ${Math.abs(s)}) en behoud het teken. Uitkomst: ${zf(s)}.`
+     : `Verschillend teken: trek de kleinste absolute waarde af van de grootste (${Math.max(Math.abs(a),Math.abs(b))} − ${Math.min(Math.abs(a),Math.abs(b))} = ${Math.abs(s)}). Het resultaat krijgt het teken van het getal met de grootste absolute waarde. Uitkomst: ${zf(s)}.`;
+   return num(`Bereken.<div class="expr">${zb(a)} + ${zb(b)}</div>`, s, '', u); },
+ /* 8.2.3 Praktische werkwijze voor optellen en aftrekken */
+ ()=>{ const n=rint(3,4), first=pick([-1,1])*rint(1,15), eff=[first]; let disp=zf(first);
+   for(let i=1;i<n;i++){ const op=pick(['+','−']), w=pick([-1,1])*rint(1,15); disp+=` ${op} ${zb(w)}`; eff.push(op==='+'?w:-w); }
+   const tw=eff.map((x,i)=>i===0?zf(x):(x<0?` − ${-x}`:` + ${x}`)).join(''), P=eff.filter(x=>x>0).reduce((s,x)=>s+x,0), N=eff.filter(x=>x<0).reduce((s,x)=>s+x,0);
+   return num(`Bereken.<div class="expr">${disp}</div>`, P+N, '',
+     `Stap 1, haakjes wegwerken: ${tw}<br><i>(+ voor de haakjes: het teken blijft. − voor de haakjes: het teken verandert.)</i><br>Stap 2: de positieve getallen samen = ${P}, de negatieve samen = ${zf(N)}<br>Stap 3: ${P} + ${zb(N)} = ${zf(P+N)}`); },
+ ()=>{ const n=rint(4,5); let eff; do{ eff=range(1,n).map(()=>pick([-1,1])*rint(2,20)); }while(!eff.some(x=>x<0)||!eff.some(x=>x>0));
+   const tw=eff.map((x,i)=>i===0?zf(x):(x<0?` − ${-x}`:` + ${x}`)).join(''), P=eff.filter(x=>x>0).reduce((s,x)=>s+x,0), N=eff.filter(x=>x<0).reduce((s,x)=>s+x,0);
+   return num(`Bereken.<div class="expr">${tw}</div>`, P+N, '',
+     `Tel de positieve getallen samen: ${eff.filter(x=>x>0).join(' + ')} = ${P}<br>Tel de negatieve getallen samen: ${eff.filter(x=>x<0).map(zf).join(' ')} = ${zf(N)}<br>Samen: ${P} − ${-N} = ${zf(P+N)}`); },
+ ()=>{ const t=rint(0,3);
+   if(t===0){ const a=rint(2,12), b=rint(1,15);
+     return num(`'s Morgens is het ${zf(-a)} °C. 's Middags is het ${b} °C. Met hoeveel graden is de temperatuur <b>gestegen</b>?`, a+b, '°C',
+       `Stijging = eind − begin = ${b} − ${zb(-a)} = ${b} + ${a} = ${a+b} °C.<br>Op de getallenas: van ${zf(-a)} naar 0 is ${a}, van 0 naar ${b} is ${b}.`, null, [`'s morgens: ${zf(-a)} °C`,`'s middags: ${b} °C`], 'de stijging (in °C)'); }
+   if(t===1){ const s=pick([-1,-2,-3]), up=rint(3,9), down=rint(2,12), e=s+up-down;
+     return num(`Een lift vertrekt op verdieping ${zf(s)} (de kelder). Hij gaat ${up} verdiepingen omhoog en daarna ${down} verdiepingen omlaag. Op welke verdieping stopt hij?`, e, '',
+       `${zf(s)} + ${up} − ${down} = ${zf(e)}.`+(e<0?' Een negatieve verdieping ligt onder de grond.':''), null, [`start: verdieping ${zf(s)}`,`${up} omhoog`,`${down} omlaag`], 'de verdieping waar de lift stopt'); }
+   if(t===2){ const d=rint(8,30), up=rint(2,d-1);
+     return num(`Een duiker zwemt op ${d} m onder het wateroppervlak (dat is ${zf(-d)} m). Hij stijgt ${up} m. Op welke hoogte zit hij nu? Geef een geheel getal (negatief = onder water).`, -d+up, 'm',
+       `${zf(-d)} + ${up} = ${zf(-d+up)} m. Hij zit nog onder water.`, null, [`start: ${zf(-d)} m`,`stijgt ${up} m`], 'nieuwe hoogte (in m)'); }
+   const a=rint(5,30), b=rint(a+5,a+50);
+   return num(`Op je rekening staat ${a} euro. Je betaalt ${b} euro. Hoeveel staat er nu op je rekening? (Te weinig geld = negatief getal.)`, a-b, 'euro',
+     `${a} − ${b} = ${zf(a-b)} euro. Je staat ${b-a} euro in het rood.`, null, [`op de rekening: ${a} euro`,`betaling: ${b} euro`], 'nieuw saldo (in euro)'); },
+ ()=>tfPick([
+   ['De som van twee negatieve getallen is altijd negatief.', true, 'Waar. Bv. (−3) + (−5) = −8.'],
+   ['De som van een positief en een negatief getal is altijd negatief.', false, 'Onwaar. Bv. (+7) + (−2) = +5. Het teken hangt af van welk getal de grootste absolute waarde heeft.'],
+   ['Het tegengestelde van een getal is altijd negatief.', false, 'Onwaar. Het tegengestelde van −6 is +6.'],
+   ['De absolute waarde van een getal is nooit negatief.', true, 'Waar. Het is een afstand tot 0, en een afstand is nooit negatief.'],
+   ['Een getal plus zijn tegengestelde is altijd 0.', true, 'Waar. Bv. (−9) + (+9) = 0.'],
+   ['Elk negatief getal is kleiner dan 0.', true, 'Waar. Negatieve getallen liggen links van 0 op de getallenas.'],
+   ['−10 is groter dan −2.', false, 'Onwaar. −10 ligt verder links op de getallenas, dus −10 < −2.'],
+ ]),
+],
+};
+
+/* ===== Examen opbouwen ===== */
+function gen(fn){ let err; for(let k=0;k<40;k++){ try{ return fn(); }catch(e){ err=e; } } throw err; }
+function buildExam(){
+  const qs=[];
+  for(const t of Object.keys(QUOTA)){
+    shuffle(BANK[t].map((_,i)=>i)).slice(0,QUOTA[t]).forEach(i=>{ const q=gen(BANK[t][i]); q.topic=t; q.gid=t+i; qs.push(q); });
+  }
+  return qs;
+}
+const parseNum = s => {
+  if(s==null) return NaN;
+  let t=String(s).replace(/[\s  ]/g,'').replace(/[−–]/g,'-').replace(/[a-zA-Z°€]+\.?$/,'');   // eenheid achteraan mag (12 cm)
+  if(/^[-+]?\d{1,3}(\.\d{3})+$/.test(t)) t=t.replace(/\./g,'');   // 9.999 = negenduizend …
+  t=t.replace(',','.');
+  return /^[-+]?\d+(\.\d+)?$/.test(t) ? parseFloat(t) : NaN;
+};
+function isCorrect(q,a){
+  if(q.type==='mc') return a===q.correct;
+  const v=parseNum(a); return !isNaN(v) && Math.abs(v-q.answer)<1e-9;
+}
+const fmtAnswer = (q,a) => q.type==='mc' ? (a==null?'—':q.choices[a]) : (a==null||a===''?'—':esc(a)+(q.unit?' '+q.unit:''));
+const fmtCorrect = q => q.type==='mc' ? q.choices[q.correct] : big(q.answer)+(q.unit?' '+q.unit:'');
+const plain = s => String(s).replace(/<[^>]+>/g,'');
+
+/* ===== Opslag ===== */
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(KEY+'_'+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(KEY+'_'+k,JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(KEY+'_'+k); }catch(e){} }
+};
+let S = store.get('state', null);
+const save = () => store.set('state', S);
+
+/* ===== Uitslag doorsturen (ntfy) ===== */
+async function flushResults(){
+  const q=store.get('outbox',[]); if(!q.length) return;
+  const rest=[];
+  for(const msg of q){
+    try{ const r=await fetch('https://ntfy.sh/',{method:'POST',body:JSON.stringify(msg)}); if(!r.ok) rest.push(msg); }
+    catch(e){ rest.push(msg); }
+  }
+  store.set('outbox',rest);
+  const el=document.getElementById('sendstate');
+  if(el) el.textContent = rest.length ? 'Uitslag nog niet doorgestuurd (geen verbinding?) — wordt later opnieuw geprobeerd.' : 'Uitslag doorgestuurd.';
+}
+function queueResult(){
+  const r=S.result, n=S.questions.length;
+  const per=Object.keys(TOPICS).map(t=>`${TOPICS[t]}: ${r.per[t][0]}/${r.per[t][1]}`).join('\n');
+  const fout=S.questions.map((q,i)=>isCorrect(q,S.answers[i])?null:`V${i+1} (${TOPICS[q.topic]})${q.choices&&q.choices[0]==='Waar'?' «'+plain(q.text).replace('Waar of onwaar? ','').slice(0,90)+'»':''}: gaf ${S.answers[i]==null||S.answers[i]===''?'niets':plain(fmtAnswer(q,S.answers[i]))} — juist: ${plain(fmtCorrect(q))}`).filter(Boolean);
+  const msg={topic:NTFY_TOPIC, title:`Wiskunde${S.name?' – '+S.name:''}: ${r.score}/${n} (${r.pct}%)`,
+    message:`${new Date(r.end).toLocaleString('nl-BE')} · duur ${r.min} min\n\n${per}\n\n${fout.length?'Fout:\n'+fout.join('\n'):'Alles juist!'}`.slice(0,3900),
+    tags:[r.pct>=50?'white_check_mark':'x'], priority:3};
+  const q=store.get('outbox',[]); q.push(msg); store.set('outbox',q);
+}
+
+/* ===== Schermen ===== */
+const app=document.getElementById('app');
+function render(){
+  if(!S || !S.questions) return renderStart();
+  if(S.finished) return S.reviewing ? renderReview() : renderResult();
+  renderQuestion();
+}
+function renderStart(){
+  const name=store.get('name',''), hist=store.get('hist',[]), tot=Object.values(QUOTA).reduce((s,x)=>s+x,0);
+  app.innerHTML=`<div class="card">
+    <h2>Proefexamen</h2>
+    <p class="muted">Leerstof proefwerk 1ste trimester: hoofdstuk 1, 2, 3 en 8.</p>
+    <ul class="topics">${Object.keys(QUOTA).map(t=>`<li>${TOPICS[t]} — ${QUOTA[t]} vragen</li>`).join('')}</ul>
+    <p class="small muted">${tot} vragen, geen tijdslimiet. Elk proefexamen heeft andere vragen en andere getallen. Werk zonder rekenmachine en hou kladpapier bij de hand. Je mag terugbladeren tot je indient.</p>
+    <label class="f" for="nm">Je naam</label>
+    <input type="text" id="nm" value="${esc(name)}" autocomplete="given-name">
+    <div class="row"><span></span><button class="pri" id="go">Start proefexamen</button></div>
+    ${hist.length?`<div class="hist"><b>Vorige pogingen</b><table class="tbl">${hist.slice(-8).reverse().map(h=>`<tr><td>${new Date(h.d).toLocaleDateString('nl-BE')} ${new Date(h.d).toLocaleTimeString('nl-BE',{hour:'2-digit',minute:'2-digit'})}</td><td>${h.s}/${h.n} (${h.p}%)</td></tr>`).join('')}</table></div>`:''}
+  </div>`;
+  document.getElementById('go').onclick=()=>{
+    const nm=document.getElementById('nm').value.trim(); store.set('name',nm);
+    S={name:nm, questions:buildExam(), answers:[], cur:0, start:Date.now(), finished:false}; save(); render();
+  };
+}
+function renderQuestion(){
+  const n=S.questions.length, i=S.cur, q=S.questions[i], a=S.answers[i];
+  const answered=S.answers.filter(x=>x!=null&&x!=='').length;
+  let body='';
+  if(q.type==='mc') body=`<div class="choices">${q.choices.map((c,k)=>`<button class="choice ${a===k?'sel':''}" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${c}</span></button>`).join('')}</div>`;
+  else body=`<div class="numrow"><button class="pm" id="pm" title="minteken">+/−</button><input type="text" inputmode="decimal" id="inp" placeholder="antwoord" value="${a!=null?esc(a):''}" autocomplete="off"><b>${q.unit}</b></div><div class="hint">Typ alleen het getal${q.unit?', de eenheid staat er al':''}. Een negatief getal? Typ een minteken (−) of tik op +/−.</div>`;
+  app.innerHTML=`<div class="bar"><i style="width:${answered/n*100}%"></i></div>
+   <div class="card">
+    <span class="tag">${TOPICS[q.topic]}</span>
+    <div class="muted small">Vraag ${i+1} van ${n}</div>
+    <div class="qtext">${q.text}</div>${q.svg||''}${q.gg||''}${body}
+    <div class="row"><button id="prev" ${i===0?'disabled':''}>← Vorige</button>
+      ${i<n-1?`<button class="pri" id="next">Volgende →</button>`:`<button class="pri" id="done">Indienen</button>`}</div>
+    <div class="dots">${S.questions.map((_,k)=>`<button data-go="${k}" class="${S.answers[k]!=null&&S.answers[k]!==''?'ans':''} ${k===i?'cur':''}">${k+1}</button>`).join('')}</div>
+   </div>`;
+  app.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{ S.answers[i]=+b.dataset.k; save(); renderQuestion(); });
+  const inp=document.getElementById('inp');
+  if(inp){ inp.oninput=()=>{ S.answers[i]=inp.value; save(); };
+           inp.onkeydown=e=>{ if(e.key==='Enter') (document.getElementById('next')||document.getElementById('done')).click(); };
+           document.getElementById('pm').onclick=()=>{ const v=inp.value.trim(); inp.value=/^[-−–]/.test(v)?v.replace(/^[-−–]\s*/,''):'-'+v; S.answers[i]=inp.value; save(); inp.focus(); };
+           if(matchMedia('(pointer:fine)').matches) inp.focus(); }
+  const go=k=>{ S.cur=k; save(); renderQuestion(); window.scrollTo(0,0); };
+  document.getElementById('prev').onclick=()=>go(i-1);
+  const nx=document.getElementById('next'); if(nx) nx.onclick=()=>go(i+1);
+  const dn=document.getElementById('done'); if(dn) dn.onclick=finish;
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(+b.dataset.go));
+}
+function finish(){
+  const n=S.questions.length, open=n-S.answers.filter(x=>x!=null&&x!=='').length;
+  if(open>0 && !confirm(`Je hebt nog ${open} vraag${open>1?'en':''} niet beantwoord. Toch indienen?`)) return;
+  const per={}; Object.keys(TOPICS).forEach(t=>per[t]=[0,0]);
+  let score=0; S.questions.forEach((q,i)=>{ const ok=isCorrect(q,S.answers[i]); per[q.topic][1]++; if(ok){score++; per[q.topic][0]++;} });
+  const end=Date.now();
+  S.result={score, pct:Math.round(score/n*100), per, end, min:Math.max(1,Math.round((end-S.start)/60000))};
+  S.finished=true; S.reviewing=false; save();
+  const h=store.get('hist',[]); h.push({d:end,s:score,n,p:S.result.pct}); store.set('hist',h);
+  queueResult(); render(); window.scrollTo(0,0); flushResults();
+}
+function renderResult(){
+  const r=S.result, n=S.questions.length, p=r.pct;
+  const col=p>=50?'var(--ok)':'var(--bad)', bg=p>=50?'var(--okbg)':'var(--badbg)';
+  const msg=p>=85?'Uitstekend!':p>=70?'Goed bezig!':p>=50?'Geslaagd, maar er is nog werk.':'Nog even oefenen — bekijk zeker je fouten.';
+  app.innerHTML=`<div class="card">
+    <div class="score"><div class="ring" style="background:${bg};color:${col}">${r.score}/${n}</div>
+      <div><h2>${p}%</h2><p>${msg}</p><p class="small muted">Duur: ${r.min} min</p></div></div>
+    <table class="tbl">${Object.keys(TOPICS).map(t=>`<tr><td>${TOPICS[t]}</td><td>${r.per[t][0]} / ${r.per[t][1]}</td></tr>`).join('')}</table>
+    <div class="row"><button id="new">Nieuw proefexamen</button><button class="pri" id="rev">Bekijk mijn antwoorden</button></div>
+    <p class="small muted" id="sendstate"></p>
+  </div>`;
+  document.getElementById('rev').onclick=()=>{ S.reviewing=true; save(); render(); window.scrollTo(0,0); };
+  document.getElementById('new').onclick=()=>{ S=null; store.del('state'); render(); window.scrollTo(0,0); };
+}
+function renderReview(){
+  const r=S.result, n=S.questions.length;
+  app.innerHTML=`<div class="card"><div class="row" style="margin-top:0"><b>Jouw antwoorden · ${r.score}/${n}</b><button id="back">← Uitslag</button></div></div>`+
+   S.questions.map((q,i)=>{ const ok=isCorrect(q,S.answers[i]);
+     return `<div class="card rev ${ok?'ok':'bad'}"><span class="tag">${TOPICS[q.topic]}</span>
+       <div class="verd">Vraag ${i+1} · ${ok?'✓ Juist':'✗ Fout'}</div>
+       <div class="qtext">${q.text}</div>${q.svg||''}${q.gg||''}
+       <div class="ans mine"><b>Jouw antwoord:</b> ${fmtAnswer(q,S.answers[i])}</div>
+       ${ok?'':`<div class="ans right"><b>Juist antwoord:</b> ${fmtCorrect(q)}</div>`}
+       <div class="uitleg">${q.uitleg}</div></div>`; }).join('')+
+   `<div class="row"><button id="back2">← Uitslag</button><button class="pri" id="new">Nieuw proefexamen</button></div>`;
+  const back=()=>{ S.reviewing=false; save(); render(); window.scrollTo(0,0); };
+  document.getElementById('back').onclick=back; document.getElementById('back2').onclick=back;
+  document.getElementById('new').onclick=()=>{ S=null; store.del('state'); render(); window.scrollTo(0,0); };
+}
+render();
+flushResults();
+</script>
+</body>
+</html>

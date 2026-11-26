@@ -50,6 +50,15 @@ table.dtab th{background:var(--soft)}
 .dots button{width:34px;height:34px;padding:0;font-size:.8rem;border-radius:8px}
 .dots button.ans{background:var(--soft);border-color:var(--acc)}
 .dots button.cur{outline:2px solid var(--acc);outline-offset:1px}
+:root{--nvt:#6b6f76;--nvtbg:#eef0f2}
+@media (prefers-color-scheme:dark){:root{--nvt:#a3a7ae;--nvtbg:#2a2d31}}
+.dots button.ans,.dots button.nv{margin:0}
+.dots button.nv{background:var(--nvtbg);border-color:var(--nvt)}
+.nvtbtn{margin-top:12px;width:100%;text-align:left;border-style:dashed;color:var(--muted);font-size:.92rem;padding:10px 12px}
+.nvtbtn.sel{border-style:solid;border-color:var(--nvt);background:var(--nvtbg);color:var(--ink)}
+.rev.nv{border-left-color:var(--nvt)}
+.rev.nv .verd{color:var(--nvt)}
+.rev.nv .ans.mine{background:var(--nvtbg)}
 .score{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 .ring{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;font-size:1.7rem;font-weight:700}
 .tbl{width:100%;border-collapse:collapse;margin-top:14px}
@@ -664,6 +673,8 @@ const parseNum = s => {
   t=t.replace(',','.');
   return /^[-+]?\d+(\.\d+)?$/.test(t) ? parseFloat(t) : NaN;
 };
+const NVT='nvt';   // antwoord 'niet van toepassing': telt niet mee voor de score
+const plainQ = q => (String(q.text)+(q.toks?' «'+q.toks.join(' ')+'»':'')).replace(/<\/?(br|div|p|li|ul|ol|table|tr|td|th|h\d)\b[^>]*>/g,' ').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim().slice(0,120);
 function isCorrect(q,a){
   if(q.type==='mc') return a===q.correct;
   const v=parseNum(a); return !isNaN(v) && Math.abs(v-q.answer)<1e-9;
@@ -695,10 +706,11 @@ async function flushResults(){
 }
 function queueResult(){
   const r=S.result, n=S.questions.length;
-  const per=Object.keys(TOPICS).map(t=>`${TOPICS[t]}: ${r.per[t][0]}/${r.per[t][1]}`).join('\n');
-  const fout=S.questions.map((q,i)=>isCorrect(q,S.answers[i])?null:`V${i+1} (${TOPICS[q.topic]})${q.choices&&q.choices[0]==='Waar'?' «'+plain(q.text).replace('Waar of onwaar? ','').slice(0,90)+'»':''}: gaf ${S.answers[i]==null||S.answers[i]===''?'niets':plain(fmtAnswer(q,S.answers[i]))} — juist: ${plain(fmtCorrect(q))}`).filter(Boolean);
-  const msg={topic:NTFY_TOPIC, title:`Wiskunde${S.name?' – '+S.name:''}: ${r.score}/${n} (${r.pct}%)`,
-    message:`${new Date(r.end).toLocaleString('nl-BE')} · duur ${r.min} min\n\n${per}\n\n${fout.length?'Fout:\n'+fout.join('\n'):'Alles juist!'}`.slice(0,3900),
+  const per=Object.keys(TOPICS).map(t=>`${TOPICS[t]}: ${r.per[t][0]}/${r.per[t][1]}${r.per[t][2]?` (+${r.per[t][2]} n.v.t.)`:''}`).join('\n');
+  const fout=S.questions.map((q,i)=>(S.answers[i]===NVT||isCorrect(q,S.answers[i]))?null:`V${i+1} (${TOPICS[q.topic]})${q.choices&&q.choices[0]==='Waar'?' «'+plain(q.text).replace('Waar of onwaar? ','').slice(0,90)+'»':''}: gaf ${S.answers[i]==null||S.answers[i]===''?'niets':plain(fmtAnswer(q,S.answers[i]))} — juist: ${plain(fmtCorrect(q))}`).filter(Boolean);
+  const nvtL=S.questions.map((q,i)=>S.answers[i]===NVT?`V${i+1} (${TOPICS[q.topic]}): ${plainQ(q)}`:null).filter(Boolean);
+  const msg={topic:NTFY_TOPIC, title:`Wiskunde${S.name?' – '+S.name:''}: ${r.score}/${r.counted} (${r.pct}%)${r.nvt?` · ${r.nvt} n.v.t.`:''}`,
+    message:`${new Date(r.end).toLocaleString('nl-BE')} · duur ${r.min} min\n\n${per}${nvtL.length?'\n\nNiet van toepassing (telt niet mee):\n'+nvtL.join('\n'):''}\n\n${fout.length?'Fout:\n'+fout.join('\n'):'Alles juist!'}`.slice(0,3900),
     tags:[r.pct>=50?'white_check_mark':'x'], priority:3};
   const q=store.get('outbox',[]); q.push(msg); store.set('outbox',q);
 }
@@ -716,11 +728,11 @@ function renderStart(){
     <h2>Proefexamen</h2>
     <p class="muted">Leerstof proefwerk 1ste trimester: hoofdstuk 1, 2, 3 en 8.</p>
     <ul class="topics">${Object.keys(QUOTA).map(t=>`<li>${TOPICS[t]} — ${QUOTA[t]} vragen</li>`).join('')}</ul>
-    <p class="small muted">${tot} vragen, geen tijdslimiet. Elk proefexamen heeft andere vragen en andere getallen. Werk zonder rekenmachine en hou kladpapier bij de hand. Je mag terugbladeren tot je indient.</p>
+    <p class="small muted">${tot} vragen, geen tijdslimiet. Elk proefexamen heeft andere vragen en andere getallen. Werk zonder rekenmachine en hou kladpapier bij de hand. Je mag terugbladeren tot je indient.<br>Krijg je een vraag over iets dat je <b>niet moest kennen</b>? Kies dan “Niet van toepassing”. Die vraag telt niet mee voor je score.</p>
     <label class="f" for="nm">Je naam</label>
     <input type="text" id="nm" value="${esc(name)}" autocomplete="given-name">
     <div class="row"><span></span><button class="pri" id="go">Start proefexamen</button></div>
-    ${hist.length?`<div class="hist"><b>Vorige pogingen</b><table class="tbl">${hist.slice(-8).reverse().map(h=>`<tr><td>${new Date(h.d).toLocaleDateString('nl-BE')} ${new Date(h.d).toLocaleTimeString('nl-BE',{hour:'2-digit',minute:'2-digit'})}</td><td>${h.s}/${h.n} (${h.p}%)</td></tr>`).join('')}</table></div>`:''}
+    ${hist.length?`<div class="hist"><b>Vorige pogingen</b><table class="tbl">${hist.slice(-8).reverse().map(h=>`<tr><td>${new Date(h.d).toLocaleDateString('nl-BE')} ${new Date(h.d).toLocaleTimeString('nl-BE',{hour:'2-digit',minute:'2-digit'})}</td><td>${h.s}/${h.n} (${h.p}%)${h.v?` · ${h.v} n.v.t.`:''}</td></tr>`).join('')}</table></div>`:''}
   </div>`;
   document.getElementById('go').onclick=()=>{
     const nm=document.getElementById('nm').value.trim(); store.set('name',nm);
@@ -732,15 +744,16 @@ function renderQuestion(){
   const answered=S.answers.filter(x=>x!=null&&x!=='').length;
   let body='';
   if(q.type==='mc') body=`<div class="choices">${q.choices.map((c,k)=>`<button class="choice ${a===k?'sel':''}" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${c}</span></button>`).join('')}</div>`;
-  else body=`<div class="numrow"><button class="pm" id="pm" title="minteken">+/−</button><input type="text" inputmode="decimal" id="inp" placeholder="antwoord" value="${a!=null?esc(a):''}" autocomplete="off"><b>${q.unit}</b></div><div class="hint">Typ alleen het getal${q.unit?', de eenheid staat er al':''}. Een negatief getal? Typ een minteken (−) of tik op +/−.</div>`;
+  else body=`<div class="numrow"><button class="pm" id="pm" title="minteken">+/−</button><input type="text" inputmode="decimal" id="inp" placeholder="antwoord" value="${a!=null&&a!==NVT?esc(a):''}" autocomplete="off"><b>${q.unit}</b></div><div class="hint">Typ alleen het getal${q.unit?', de eenheid staat er al':''}. Een negatief getal? Typ een minteken (−) of tik op +/−.</div>`;
   app.innerHTML=`<div class="bar"><i style="width:${answered/n*100}%"></i></div>
    <div class="card">
     <span class="tag">${TOPICS[q.topic]}</span>
     <div class="muted small">Vraag ${i+1} van ${n}</div>
     <div class="qtext">${q.text}</div>${q.svg||''}${q.gg||''}${body}
+    <button class="nvtbtn ${a===NVT?'sel':''}" id="nvt">${a===NVT?'✓ ':''}Niet van toepassing: dit moest ik niet kennen (telt niet mee)</button>
     <div class="row"><button id="prev" ${i===0?'disabled':''}>← Vorige</button>
       ${i<n-1?`<button class="pri" id="next">Volgende →</button>`:`<button class="pri" id="done">Indienen</button>`}</div>
-    <div class="dots">${S.questions.map((_,k)=>`<button data-go="${k}" class="${S.answers[k]!=null&&S.answers[k]!==''?'ans':''} ${k===i?'cur':''}">${k+1}</button>`).join('')}</div>
+    <div class="dots">${S.questions.map((_,k)=>`<button data-go="${k}" class="${S.answers[k]===NVT?'nv':S.answers[k]!=null&&S.answers[k]!==''?'ans':''} ${k===i?'cur':''}">${k+1}</button>`).join('')}</div>
    </div>`;
   app.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{ S.answers[i]=+b.dataset.k; save(); renderQuestion(); });
   const inp=document.getElementById('inp');
@@ -748,6 +761,7 @@ function renderQuestion(){
            inp.onkeydown=e=>{ if(e.key==='Enter') (document.getElementById('next')||document.getElementById('done')).click(); };
            document.getElementById('pm').onclick=()=>{ const v=inp.value.trim(); inp.value=/^[-−–]/.test(v)?v.replace(/^[-−–]\s*/,''):'-'+v; S.answers[i]=inp.value; save(); inp.focus(); };
            if(matchMedia('(pointer:fine)').matches) inp.focus(); }
+  document.getElementById('nvt').onclick=()=>{ S.answers[i]=S.answers[i]===NVT?null:NVT; save(); renderQuestion(); };
   const go=k=>{ S.cur=k; save(); renderQuestion(); window.scrollTo(0,0); };
   document.getElementById('prev').onclick=()=>go(i-1);
   const nx=document.getElementById('next'); if(nx) nx.onclick=()=>go(i+1);
@@ -758,21 +772,22 @@ function finish(){
   const n=S.questions.length, open=n-S.answers.filter(x=>x!=null&&x!=='').length;
   if(open>0 && !confirm(`Je hebt nog ${open} vraag${open>1?'en':''} niet beantwoord. Toch indienen?`)) return;
   const per={}; Object.keys(TOPICS).forEach(t=>per[t]=[0,0]);
-  let score=0; S.questions.forEach((q,i)=>{ const ok=isCorrect(q,S.answers[i]); per[q.topic][1]++; if(ok){score++; per[q.topic][0]++;} });
+  let score=0, nvt=0; S.questions.forEach((q,i)=>{ if(S.answers[i]===NVT){ nvt++; per[q.topic][2]=(per[q.topic][2]||0)+1; return; } const ok=isCorrect(q,S.answers[i]); per[q.topic][1]++; if(ok){score++; per[q.topic][0]++;} });
+  const counted=n-nvt;
   const end=Date.now();
-  S.result={score, pct:Math.round(score/n*100), per, end, min:Math.max(1,Math.round((end-S.start)/60000))};
+  S.result={score, counted, nvt, pct:counted?Math.round(score/counted*100):0, per, end, min:Math.max(1,Math.round((end-S.start)/60000))};
   S.finished=true; S.reviewing=false; save();
-  const h=store.get('hist',[]); h.push({d:end,s:score,n,p:S.result.pct}); store.set('hist',h);
+  const h=store.get('hist',[]); h.push({d:end,s:score,n:counted,p:S.result.pct,v:nvt}); store.set('hist',h);
   queueResult(); render(); window.scrollTo(0,0); flushResults();
 }
 function renderResult(){
-  const r=S.result, n=S.questions.length, p=r.pct;
+  const r=S.result, n=(r.counted!=null?r.counted:S.questions.length), p=r.pct;
   const col=p>=50?'var(--ok)':'var(--bad)', bg=p>=50?'var(--okbg)':'var(--badbg)';
   const msg=p>=85?'Uitstekend!':p>=70?'Goed bezig!':p>=50?'Geslaagd, maar er is nog werk.':'Nog even oefenen — bekijk zeker je fouten.';
   app.innerHTML=`<div class="card">
     <div class="score"><div class="ring" style="background:${bg};color:${col}">${r.score}/${n}</div>
-      <div><h2>${p}%</h2><p>${msg}</p><p class="small muted">Duur: ${r.min} min</p></div></div>
-    <table class="tbl">${Object.keys(TOPICS).map(t=>`<tr><td>${TOPICS[t]}</td><td>${r.per[t][0]} / ${r.per[t][1]}</td></tr>`).join('')}</table>
+      <div><h2>${p}%</h2><p>${msg}</p><p class="small muted">Duur: ${r.min} min${r.nvt?` · ${r.nvt} vra${r.nvt>1?'gen':'ag'} niet van toepassing (telt niet mee)`:''}</p></div></div>
+    <table class="tbl">${Object.keys(TOPICS).map(t=>`<tr><td>${TOPICS[t]}</td><td>${r.per[t][0]} / ${r.per[t][1]}${r.per[t][2]?` <span class="muted small">(+${r.per[t][2]} n.v.t.)</span>`:''}</td></tr>`).join('')}</table>
     <div class="row"><button id="new">Nieuw proefexamen</button><button class="pri" id="rev">Bekijk mijn antwoorden</button></div>
     <p class="small muted" id="sendstate"></p>
   </div>`;
@@ -780,13 +795,13 @@ function renderResult(){
   document.getElementById('new').onclick=()=>{ S=null; store.del('state'); render(); window.scrollTo(0,0); };
 }
 function renderReview(){
-  const r=S.result, n=S.questions.length;
+  const r=S.result, n=(r.counted!=null?r.counted:S.questions.length);
   app.innerHTML=`<div class="card"><div class="row" style="margin-top:0"><b>Jouw antwoorden · ${r.score}/${n}</b><button id="back">← Uitslag</button></div></div>`+
-   S.questions.map((q,i)=>{ const ok=isCorrect(q,S.answers[i]);
-     return `<div class="card rev ${ok?'ok':'bad'}"><span class="tag">${TOPICS[q.topic]}</span>
-       <div class="verd">Vraag ${i+1} · ${ok?'✓ Juist':'✗ Fout'}</div>
+   S.questions.map((q,i)=>{ const nv=S.answers[i]===NVT, ok=!nv&&isCorrect(q,S.answers[i]);
+     return `<div class="card rev ${nv?'nv':ok?'ok':'bad'}"><span class="tag">${TOPICS[q.topic]}</span>
+       <div class="verd">Vraag ${i+1} · ${nv?'Niet van toepassing (telt niet mee)':ok?'✓ Juist':'✗ Fout'}</div>
        <div class="qtext">${q.text}</div>${q.svg||''}${q.gg||''}
-       <div class="ans mine"><b>Jouw antwoord:</b> ${fmtAnswer(q,S.answers[i])}</div>
+       <div class="ans mine"><b>Jouw antwoord:</b> ${nv?'Niet van toepassing':fmtAnswer(q,S.answers[i])}</div>
        ${ok?'':`<div class="ans right"><b>Juist antwoord:</b> ${fmtCorrect(q)}</div>`}
        <div class="uitleg">${q.uitleg}</div></div>`; }).join('')+
    `<div class="row"><button id="back2">← Uitslag</button><button class="pri" id="new">Nieuw proefexamen</button></div>`;
